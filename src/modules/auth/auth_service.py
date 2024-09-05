@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from src.common.entities.user_entity import User
 from src.common.services.crypto.crypto_service import EncryptionService
 from src.common.services.jwt.jwt_service import JwtService
 from src.modules.auth.mappers.auth_mappers import (
@@ -16,9 +17,7 @@ class AuthService:
         self.jwt_service = JwtService()
 
     def register(self, email: str, password: str):
-        print('HOLA')
         user = self.user_service.get_by_email(email)
-        print('HOLA X2')
 
         if user is not None:
             raise HTTPException(
@@ -52,7 +51,7 @@ class AuthService:
 
         return map_to_login_response(token)
 
-    def verify(self, token: str):
+    def verify(self, token: str) -> User:
         token = self.jwt_service.decode(token)
         user = self.user_service.get_by_email(token["sub"])
 
