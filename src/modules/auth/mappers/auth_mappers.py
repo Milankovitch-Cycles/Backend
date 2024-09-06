@@ -1,6 +1,8 @@
-def map_to_register_response():
-    return {"message": "User created successfully"}
+from src.common.types.types import Message, Token
+
+def map_to_message_response(message) -> Message:
+    return Message(message=message)
 
 
-def map_to_login_response(token: str):
-    return {"Authorization": f"Bearer { token }"}
+def map_to_jwt_response(token: str) -> Token:
+    return Token(type="bearer", access_token=token)
