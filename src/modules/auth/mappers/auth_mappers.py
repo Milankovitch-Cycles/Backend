@@ -1,5 +1,6 @@
 from src.common.types.types import Message, Token
 
+
 def map_to_message_response(message) -> Message:
     return Message(message=message)
 

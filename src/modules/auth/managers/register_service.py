@@ -7,6 +7,7 @@ from src.modules.auth.mappers.auth_mappers import (
     map_to_message_response,
 )
 
+
 class RegisterService:
     def __init__(self, session: Session):
         self.user_service = UserService(session)

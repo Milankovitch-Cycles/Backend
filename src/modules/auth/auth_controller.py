@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends
-from src.modules.auth.dtos.dtos import InitResetPassword, LoginRequestDto, RegisterRequestDto
+from src.modules.auth.dtos.dtos import (
+    InitResetPassword,
+    LoginRequestDto,
+    RegisterRequestDto,
+)
 from src.common.config.config import get_db
 from sqlalchemy.orm import Session
 from .auth_service import AuthService
 from src.common.types.types import Message, Token
 
 auth = APIRouter(tags=["Auth"], prefix="/auth")
+
 
 @auth.post("/register", status_code=200, response_model=Message)
 def register(register_request_dto: RegisterRequestDto, db: Session = Depends(get_db)):
@@ -22,10 +27,10 @@ def login(login_request_dto: LoginRequestDto, db: Session = Depends(get_db)):
 
     return auth_service.login(email, password)
 
+
 @auth.post("/reset_password/init", status_code=200, response_model=Token)
 def login(init_reset_password_dto: InitResetPassword, db: Session = Depends(get_db)):
     auth_service = AuthService(db)
     email = init_reset_password_dto.email
 
     return auth_service.init_reset_password(email)
-
