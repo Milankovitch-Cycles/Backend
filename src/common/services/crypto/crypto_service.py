@@ -5,8 +5,7 @@ from settings import CIPHER_KEY
 
 class EncryptionService:
     def __init__(self):
-        key = CIPHER_KEY.encode()
-        self.cipher = Fernet(key)
+        self.cipher = Fernet(CIPHER_KEY.encode())
 
     def encrypt(self, plaintext: str) -> str:
         return self.cipher.encrypt(plaintext.encode()).decode()
