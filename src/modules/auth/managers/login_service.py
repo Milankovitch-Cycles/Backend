@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from src.common.entities.user_entity import UserEntity
 from src.common.services.crypto.crypto_service import EncryptionService
 from src.common.services.jwt.jwt_service import JwtService
 from src.modules.users.user_service import UserService
@@ -21,7 +22,7 @@ class LoginService:
         if user is None:
             raise HTTPException(
                 status_code=500,
-                detail="We are sorry, an error occurred during the login process.",
+                detail="We are sorry, an error occurred during the login process",
             )
 
         decrypted_password = self.encryption_service.decrypt(user.password)
@@ -29,9 +30,22 @@ class LoginService:
         if decrypted_password != password:
             raise HTTPException(
                 status_code=500,
-                detail="We are sorry, an error occurred during the login process.",
+                detail="We are sorry, an error occurred during the login process",
             )
 
         token = self.jwt_service.encode(email)
 
         return map_to_jwt_response(token)
+
+    def get_user(self, jwt: str) -> UserEntity:
+        message = self.jwt_service.decode(jwt)
+
+        user = self.user_service.get_by_email(message["sub"])
+
+        if user is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid credentials",
+            )
+
+        return user

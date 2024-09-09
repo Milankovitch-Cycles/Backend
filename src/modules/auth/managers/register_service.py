@@ -19,10 +19,10 @@ class RegisterService:
         if user is not None:
             raise HTTPException(
                 status_code=409,
-                detail="We are sorry, an error occurred during the registration process.",
+                detail="We are sorry, an error occurred during the registration process",
             )
 
         password_hash = self.encryption_service.encrypt(password)
-        self.user_service.create(email, password_hash)
+        self.user_service.create_user(email, password_hash)
 
         return map_to_message_response("User created successfully")
