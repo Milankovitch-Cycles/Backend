@@ -1,36 +1,66 @@
-from fastapi import APIRouter, Depends
+from fastapi import Depends
+from requests import Session
+from src.modules.auth.dependencies.dependencies import (
+    get_user_in_reset_password_flow,
+    get_auth_service,
+)
+from src.common.entities.user_entity import UserEntity
 from src.modules.auth.dtos.dtos import (
-    InitResetPassword,
+    FinishResetPasswordDto,
+    InitResetPasswordDto,
     LoginRequestDto,
     RegisterRequestDto,
+    VerifyResetPasswordDto,
 )
-from src.common.config.config import get_db
-from sqlalchemy.orm import Session
 from .auth_service import AuthService
-from src.common.types.types import Message, Token
 
-auth = APIRouter(tags=["Auth"], prefix="/auth")
-
-
-@auth.post("/register", status_code=200, response_model=Message)
-def register(register_request_dto: RegisterRequestDto, db: Session = Depends(get_db)):
-    auth_service = AuthService(db)
-    email, password = (register_request_dto.email, register_request_dto.password)
-
-    return auth_service.register(email, password)
+# TO-DO: Me gustaria inicializar el servicio en el controlador pero me rompe el Depends del get_auth_service
 
 
-@auth.post("/login", status_code=200, response_model=Token)
-def login(login_request_dto: LoginRequestDto, db: Session = Depends(get_db)):
-    auth_service = AuthService(db)
-    email, password = (login_request_dto.email, login_request_dto.password)
+class AuthController:
+    def register(
+        self,
+        register_request_dto: RegisterRequestDto,
+        auth_service: AuthService = Depends(get_auth_service),
+    ):
+        email, password = (register_request_dto.email, register_request_dto.password)
 
-    return auth_service.login(email, password)
+        return auth_service.register(email, password)
 
+    def login(
+        self,
+        login_request_dto: LoginRequestDto,
+        auth_service: AuthService = Depends(get_auth_service),
+    ):
+        email, password = (login_request_dto.email, login_request_dto.password)
 
-@auth.post("/reset_password/init", status_code=200, response_model=Token)
-def login(init_reset_password_dto: InitResetPassword, db: Session = Depends(get_db)):
-    auth_service = AuthService(db)
-    email = init_reset_password_dto.email
+        return auth_service.login(email, password)
 
-    return auth_service.init_reset_password(email)
+    def init_reset_password(
+        self,
+        init_reset_password_dto: InitResetPasswordDto,
+        auth_service: AuthService = Depends(get_auth_service),
+    ):
+        email = init_reset_password_dto.email
+
+        return auth_service.init_reset_password(email)
+
+    def verify_reset_password(
+        self,
+        verify_reset_password_dto: VerifyResetPasswordDto,
+        user: UserEntity = Depends(get_user_in_reset_password_flow),
+        auth_service: AuthService = Depends(get_auth_service),
+    ):
+        email, code = (user.email, verify_reset_password_dto.code)
+
+        return auth_service.verify_reset_password(email, code)
+
+    def finish_reset_password(
+        self,
+        finish_reset_password_dto: FinishResetPasswordDto,
+        user: UserEntity = Depends(get_user_in_reset_password_flow),
+        auth_service: AuthService = Depends(get_auth_service),
+    ):
+        email, password = (user.email, finish_reset_password_dto.password)
+
+        return auth_service.finish_reset_password(email, password)
