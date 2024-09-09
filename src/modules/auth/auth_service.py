@@ -1,5 +1,4 @@
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
 from src.common.entities.user_entity import UserEntity
 from src.modules.auth.managers.reset_password_service import ResetPasswordService
 from src.modules.auth.managers.login_service import LoginService
@@ -28,12 +27,8 @@ class AuthService:
     def finish_reset_password(self, email: str, new_password: str) -> Message:
         return self.reset_pasword_service.finish(email, new_password)
 
-    def get_user_in_session(
-        self, jwt: str = Depends(OAuth2PasswordBearer)
-    ) -> UserEntity:
+    def get_user_in_session(self, jwt: str) -> UserEntity:
         return self.login_service.get_user(jwt)
 
-    def get_user_in_reset_password_flow(
-        self, jwt: str = Depends(OAuth2PasswordBearer)
-    ) -> UserEntity:
+    def get_user_in_reset_password_flow(self, jwt: str) -> UserEntity:
         return self.reset_pasword_service.get_user(jwt)
