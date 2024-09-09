@@ -11,5 +11,13 @@ class RegisterRequestDto(BaseModel):
     password: str
 
 
-class InitResetPassword(BaseModel):
+class InitResetPasswordDto(BaseModel):
     email: str
+
+
+class VerifyResetPasswordDto(BaseModel):
+    code: str
+
+
+class FinishResetPasswordDto(BaseModel):
+    password: str
