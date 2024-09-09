@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 from src.common.services.crypto.crypto_service import EncryptionService
 from src.modules.users.user_service import UserService
 from src.common.types.types import Message
@@ -9,12 +8,12 @@ from src.modules.auth.mappers.auth_mappers import (
 
 
 class RegisterService:
-    def __init__(self, session: Session):
-        self.user_service = UserService(session)
+    def __init__(self):
+        self.user_service = UserService()
         self.encryption_service = EncryptionService()
 
     def register(self, email: str, password: str) -> Message:
-        user = self.user_service.get_by_email(email)
+        user = self.user_service.get(email)
 
         if user is not None:
             raise HTTPException(
@@ -23,6 +22,6 @@ class RegisterService:
             )
 
         password_hash = self.encryption_service.encrypt(password)
-        self.user_service.create_user(email, password_hash)
+        self.user_service.create(email, password_hash)
 
         return map_to_message_response("User created successfully")

@@ -1,41 +1,37 @@
 import datetime
-from fastapi import HTTPException
 from src.common.services.smtp.smtp_service import SmtpService
 from src.common.entities.code_entity import CodeEntity
-from sqlalchemy.orm import Session
+from src.common.config.config import session
 import random
 
 
 class CodeService:
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self):
         self.smtp_service = SmtpService()
 
-    def create_code(self, email: str) -> str:
-        code_entity = CodeEntity(
-            code=str(random.randrange(100000, 999999)), email=email
-        )
-        self.session.add(code_entity)
-        self.session.commit()
-
-        return code_entity.code
-
-    def send_code(self, email: str):
-        code = self.create_code(email)
-        return self.smtp_service.send_email(
-            email, "Verification Code", f"Your code is {code}"
-        )
-
-    def get_by_email(self, email: str) -> CodeEntity:
+    def get(self, email: str) -> CodeEntity:
         return (
-            self.session.query(CodeEntity)
+            session.query(CodeEntity)
             .filter(CodeEntity.email == email)
             .order_by(CodeEntity.created_at.desc())
             .first()
         )
 
-    def validate_code(self, email: str, code: str) -> bool:
-        last_code = self.get_by_email(email)
+    def create(self, email: str) -> str:
+        random_code = str(random.randrange(100000, 999999))
+        code_entity = CodeEntity(code=random_code, email=email)
+        session.add(code_entity)
+        session.commit()
+        return code_entity.code
+
+    def send(self, email: str):
+        code = self.create(email)
+        return self.smtp_service.send_email(
+            email, "Verification Code", f"Your code is {code}"
+        )
+
+    def validate(self, email: str, code: str) -> bool:
+        last_code = self.get(email)
 
         if (
             last_code is None
@@ -46,13 +42,13 @@ class CodeService:
             return False
 
         last_code.verified = True
-        self.session.add(last_code)
-        self.session.commit()
+        session.add(last_code)
+        session.commit()
 
         return True
 
-    def has_active_code(self, email: str) -> bool:
-        last_code = self.get_by_email(email)
+    def is_active(self, email: str) -> bool:
+        last_code = self.get(email)
 
         if (
             last_code is None

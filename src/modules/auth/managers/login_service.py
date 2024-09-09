@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 from src.common.entities.user_entity import UserEntity
 from src.common.services.crypto.crypto_service import EncryptionService
 from src.common.services.jwt.jwt_service import JwtService
@@ -11,13 +10,13 @@ from src.modules.auth.mappers.auth_mappers import (
 
 
 class LoginService:
-    def __init__(self, session: Session):
-        self.user_service = UserService(session)
+    def __init__(self):
+        self.user_service = UserService()
         self.encryption_service = EncryptionService()
         self.jwt_service = JwtService()
 
     def login(self, email: str, password: str) -> Token:
-        user = self.user_service.get_by_email(email)
+        user = self.user_service.get(email)
 
         if user is None:
             raise HTTPException(
@@ -40,7 +39,7 @@ class LoginService:
     def get_user(self, jwt: str) -> UserEntity:
         message = self.jwt_service.decode(jwt)
 
-        user = self.user_service.get_by_email(message["sub"])
+        user = self.user_service.get(message["sub"])
 
         if user is None:
             raise HTTPException(
