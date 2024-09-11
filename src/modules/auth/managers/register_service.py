@@ -33,7 +33,7 @@ class RegisterService:
                 "password": hashed_password,
                 "permissions": Permissions.REGISTER.value,
             },
-            expiration_time=1
+            expiration_time=1,
         )
         self.code_service.send(email)
 
@@ -47,7 +47,7 @@ class RegisterService:
                 status_code=409,
                 detail="We are sorry, an error occurred during the registration process",
             )
-            
+
         is_verified = self.code_service.validate(email, code)
 
         if not is_verified:

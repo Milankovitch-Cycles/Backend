@@ -29,7 +29,8 @@ class ResetPasswordService:
 
         self.code_service.send(email)
         token = self.jwt_service.encode(
-            {"sub": email, "permissions": Permissions.RESET_PASSWORD.value}, expiration_time=2
+            {"sub": email, "permissions": Permissions.RESET_PASSWORD.value},
+            expiration_time=2,
         )
 
         return map_to_jwt_response(token)
