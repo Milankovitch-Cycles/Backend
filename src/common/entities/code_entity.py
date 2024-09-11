@@ -1,5 +1,4 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Boolean, String, func
-from sqlalchemy.orm import relationship
 from . import Base
 
 
@@ -11,5 +10,3 @@ class CodeEntity(Base):
     code = Column(String, nullable=False)
     verified = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
-
-    user = relationship("UserEntity")

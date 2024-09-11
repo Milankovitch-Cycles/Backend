@@ -9,11 +9,10 @@ class JwtService:
     def __init__(self):
         self.secret = JWT_SECRET
         self.algorithm = JWT_ALGORITHM
-        self.expiration_time = JWT_EXPIRES_IN
 
-    def encode(self, message) -> str:
+    def encode(self, data, expiration_time=JWT_EXPIRES_IN) -> str:
         return jwt.encode(
-            payload=map_to_payload(message, self.expiration_time),
+            payload=map_to_payload(data, expiration_time),
             key=self.secret,
             algorithm=self.algorithm,
         )

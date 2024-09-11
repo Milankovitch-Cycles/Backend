@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String, Boolean, func
 from . import Base
 
 
@@ -8,3 +8,4 @@ class UserEntity(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False)
     password = Column(String, nullable=False)
+    created_at = Column(DateTime, default=func.now(), nullable=False)

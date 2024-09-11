@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from src.common.entities.user_entity import UserEntity
+from src.modules.auth.dependencies.dependencies import Permissions
 from src.common.services.crypto.crypto_service import EncryptionService
 from src.common.services.jwt.jwt_service import JwtService
 from src.modules.users.user_service import UserService
@@ -32,19 +32,8 @@ class LoginService:
                 detail="We are sorry, an error occurred during the login process",
             )
 
-        token = self.jwt_service.encode(email)
+        token = self.jwt_service.encode(
+            {"sub": email, "permissions": Permissions.LOGIN.value}
+        )
 
         return map_to_jwt_response(token)
-
-    def get_user(self, jwt: str) -> UserEntity:
-        message = self.jwt_service.decode(jwt)
-
-        user = self.user_service.get(message["sub"])
-
-        if user is None:
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid credentials",
-            )
-
-        return user

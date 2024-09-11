@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from requests import Session
+from src.modules.auth.dependencies.dependencies import Permissions
 from src.common.services.crypto.crypto_service import EncryptionService
 from src.modules.codes.code_service import CodeService
 from src.common.services.jwt.jwt_service import JwtService
@@ -18,7 +18,7 @@ class ResetPasswordService:
         self.encryption_service = EncryptionService()
         self.jwt_service = JwtService()
 
-    def init(self, email: str):
+    def start(self, email: str):
         user = self.user_service.get(email)
 
         if user is None:
@@ -28,9 +28,9 @@ class ResetPasswordService:
             )
 
         self.code_service.send(email)
-
-        email_hash = self.encryption_service.encrypt(email)
-        token = self.jwt_service.encode(email_hash)
+        token = self.jwt_service.encode(
+            {"sub": email, "permissions": Permissions.RESET_PASSWORD.value}, expiration_time=2
+        )
 
         return map_to_jwt_response(token)
 
@@ -55,9 +55,3 @@ class ResetPasswordService:
         self.user_service.update(email, {"password": password_hash})
 
         return map_to_message_response("Password updated successfully")
-
-    def get_user(self, token: str):
-        message = self.jwt_service.decode(token)
-        email = self.encryption_service.decrypt(message["sub"])
-
-        return self.user_service.get(email)

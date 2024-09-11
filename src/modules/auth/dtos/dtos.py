@@ -6,9 +6,13 @@ class LoginRequestDto(BaseModel):
     password: str
 
 
-class RegisterRequestDto(BaseModel):
+class StartRegistrationRequestDto(BaseModel):
     email: str
     password: str
+
+
+class FinishRegistrationRequestDto(BaseModel):
+    code: str
 
 
 class InitResetPasswordDto(BaseModel):

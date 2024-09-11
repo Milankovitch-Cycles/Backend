@@ -34,6 +34,9 @@ class SmtpService:
     def send_email(self, receiver: str, title: str, text: str):
         body = self.create_body(self.sender, receiver, title, text)
 
-        with smtplib.SMTP_SSL(self.server.hostname, self.server.port) as server:
-            server.login(self.sender.email, self.sender.password)
-            server.sendmail(self.sender.email, receiver, body)
+        try:
+            with smtplib.SMTP_SSL(self.server.hostname, self.server.port) as server:
+                server.login(self.sender.email, self.sender.password)
+                server.sendmail(self.sender.email, receiver, body)
+        except Exception as e:
+            print(f"There was an error with the request to SMTP API")

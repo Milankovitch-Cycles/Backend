@@ -1,8 +1,11 @@
 from fastapi import HTTPException
+from src.modules.auth.dependencies.dependencies import Permissions
+from src.common.services.jwt.jwt_service import JwtService
+from src.modules.codes.code_service import CodeService
 from src.common.services.crypto.crypto_service import EncryptionService
 from src.modules.users.user_service import UserService
-from src.common.types.types import Message
 from src.modules.auth.mappers.auth_mappers import (
+    map_to_jwt_response,
     map_to_message_response,
 )
 
@@ -10,18 +13,49 @@ from src.modules.auth.mappers.auth_mappers import (
 class RegisterService:
     def __init__(self):
         self.user_service = UserService()
+        self.code_service = CodeService()
         self.encryption_service = EncryptionService()
+        self.jwt_service = JwtService()
 
-    def register(self, email: str, password: str) -> Message:
+    def start(self, email: str, password: str):
         user = self.user_service.get(email)
 
-        if user is not None:
+        if user:
             raise HTTPException(
                 status_code=409,
                 detail="We are sorry, an error occurred during the registration process",
             )
 
-        password_hash = self.encryption_service.encrypt(password)
-        self.user_service.create(email, password_hash)
+        hashed_password = self.encryption_service.encrypt(password)
+        token = self.jwt_service.encode(
+            {
+                "email": email,
+                "password": hashed_password,
+                "permissions": Permissions.REGISTER.value,
+            },
+            expiration_time=1
+        )
+        self.code_service.send(email)
+
+        return map_to_jwt_response(token)
+
+    def finish(self, email: str, password: str, code: str):
+        user = self.user_service.get(email)
+
+        if user:
+            raise HTTPException(
+                status_code=409,
+                detail="We are sorry, an error occurred during the registration process",
+            )
+            
+        is_verified = self.code_service.validate(email, code)
+
+        if not is_verified:
+            raise HTTPException(
+                status_code=409,
+                detail="We are sorry, an error occurred during the registration process",
+            )
+
+        self.user_service.create(email, password)
 
         return map_to_message_response("User created successfully")

@@ -1,5 +1,6 @@
 from fastapi import Depends
 from src.modules.auth.dependencies.dependencies import (
+    get_user_in_registration_flow,
     get_user_in_reset_password_flow,
 )
 from src.common.entities.user_entity import UserEntity
@@ -7,7 +8,8 @@ from src.modules.auth.dtos.dtos import (
     FinishResetPasswordDto,
     InitResetPasswordDto,
     LoginRequestDto,
-    RegisterRequestDto,
+    StartRegistrationRequestDto,
+    FinishRegistrationRequestDto,
     VerifyResetPasswordDto,
 )
 from .auth_service import AuthService
@@ -17,13 +19,22 @@ class AuthController:
     def __init__(self):
         self.auth_service = AuthService()
 
-    def register(
+    def start_registration(
         self,
-        register_request_dto: RegisterRequestDto,
+        register_request_dto: StartRegistrationRequestDto,
     ):
         email, password = (register_request_dto.email, register_request_dto.password)
 
-        return self.auth_service.register(email, password)
+        return self.auth_service.start_registration(email, password)
+
+    def finish_registration(
+        self,
+        register_request_dto: FinishRegistrationRequestDto,
+        user: UserEntity = Depends(get_user_in_registration_flow),
+    ):
+        email, password, code = (user.email, user.password, register_request_dto.code)
+
+        return self.auth_service.finish_registration(email, password, code)
 
     def login(
         self,
@@ -33,28 +44,28 @@ class AuthController:
 
         return self.auth_service.login(email, password)
 
-    def init_reset_password(
+    def start_password_reset(
         self,
         init_reset_password_dto: InitResetPasswordDto,
     ):
         email = init_reset_password_dto.email
 
-        return self.auth_service.init_reset_password(email)
+        return self.auth_service.start_password_reset(email)
 
-    def verify_reset_password(
+    def verify_password_reset(
         self,
         verify_reset_password_dto: VerifyResetPasswordDto,
         user: UserEntity = Depends(get_user_in_reset_password_flow),
     ):
         email, code = (user.email, verify_reset_password_dto.code)
 
-        return self.auth_service.verify_reset_password(email, code)
+        return self.auth_service.verify_password_reset(email, code)
 
-    def finish_reset_password(
+    def finish_password_reset(
         self,
         finish_reset_password_dto: FinishResetPasswordDto,
         user: UserEntity = Depends(get_user_in_reset_password_flow),
     ):
         email, password = (user.email, finish_reset_password_dto.password)
 
-        return self.auth_service.finish_reset_password(email, password)
+        return self.auth_service.finish_password_reset(email, password)

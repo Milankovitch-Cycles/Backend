@@ -1,5 +1,3 @@
-from fastapi import Depends
-from src.common.entities.user_entity import UserEntity
 from src.modules.auth.managers.reset_password_service import ResetPasswordService
 from src.modules.auth.managers.login_service import LoginService
 from src.modules.auth.managers.register_service import RegisterService
@@ -12,23 +10,20 @@ class AuthService:
         self.login_service = LoginService()
         self.reset_pasword_service = ResetPasswordService()
 
-    def register(self, email: str, password: str) -> Message:
-        return self.register_service.register(email, password)
+    def start_registration(self, email: str, password: str) -> Token:
+        return self.register_service.start(email, password)
+
+    def finish_registration(self, email: str, password: str, code: str) -> Message:
+        return self.register_service.finish(email, password, code)
 
     def login(self, email: str, password: str) -> Token:
         return self.login_service.login(email, password)
 
-    def init_reset_password(self, email: str) -> Token:
-        return self.reset_pasword_service.init(email)
+    def start_password_reset(self, email: str) -> Token:
+        return self.reset_pasword_service.start(email)
 
-    def verify_reset_password(self, email: str, code: str) -> Message:
+    def verify_password_reset(self, email: str, code: str) -> Message:
         return self.reset_pasword_service.verify(email, code)
 
-    def finish_reset_password(self, email: str, new_password: str) -> Message:
+    def finish_password_reset(self, email: str, new_password: str) -> Message:
         return self.reset_pasword_service.finish(email, new_password)
-
-    def get_user_in_session(self, jwt: str) -> UserEntity:
-        return self.login_service.get_user(jwt)
-
-    def get_user_in_reset_password_flow(self, jwt: str) -> UserEntity:
-        return self.reset_pasword_service.get_user(jwt)
