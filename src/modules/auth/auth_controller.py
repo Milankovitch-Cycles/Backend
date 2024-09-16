@@ -13,6 +13,7 @@ from src.modules.auth.dtos.dtos import (
     VerifyResetPasswordDto,
 )
 from .auth_service import AuthService
+from src.common.types.types import Token, Message
 
 
 class AuthController:
@@ -22,7 +23,7 @@ class AuthController:
     def start_registration(
         self,
         register_request_dto: StartRegistrationRequestDto,
-    ):
+    )-> Token:
         email, password = (register_request_dto.email, register_request_dto.password)
 
         return self.auth_service.start_registration(email, password)
@@ -31,7 +32,7 @@ class AuthController:
         self,
         register_request_dto: FinishRegistrationRequestDto,
         user: UserEntity = Depends(get_user_in_registration_flow),
-    ):
+    ) -> Message:
         email, password, code = (user.email, user.password, register_request_dto.code)
 
         return self.auth_service.finish_registration(email, password, code)
@@ -39,7 +40,7 @@ class AuthController:
     def login(
         self,
         login_request_dto: LoginRequestDto,
-    ):
+    ) -> Token:
         email, password = (login_request_dto.email, login_request_dto.password)
 
         return self.auth_service.login(email, password)
@@ -47,7 +48,7 @@ class AuthController:
     def start_password_reset(
         self,
         init_reset_password_dto: InitResetPasswordDto,
-    ):
+    ) -> Token:
         email = init_reset_password_dto.email
 
         return self.auth_service.start_password_reset(email)
@@ -56,7 +57,7 @@ class AuthController:
         self,
         verify_reset_password_dto: VerifyResetPasswordDto,
         user: UserEntity = Depends(get_user_in_reset_password_flow),
-    ):
+    ) -> Message:
         email, code = (user.email, verify_reset_password_dto.code)
 
         return self.auth_service.verify_password_reset(email, code)
@@ -65,7 +66,7 @@ class AuthController:
         self,
         finish_reset_password_dto: FinishResetPasswordDto,
         user: UserEntity = Depends(get_user_in_reset_password_flow),
-    ):
+    ) -> Message:
         email, password = (user.email, finish_reset_password_dto.password)
 
         return self.auth_service.finish_password_reset(email, password)
