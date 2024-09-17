@@ -8,6 +8,7 @@ from src.modules.auth.mappers.auth_mappers import (
     map_to_message_response,
 )
 from src.modules.users.user_service import UserService
+from src.common.types.types import Message, Token
 
 
 class ResetPasswordService:
@@ -18,7 +19,7 @@ class ResetPasswordService:
         self.encryption_service = EncryptionService()
         self.jwt_service = JwtService()
 
-    def start(self, email: str):
+    def start(self, email: str) -> Token:
         user = self.user_service.get(email)
 
         if user is None:
@@ -35,7 +36,7 @@ class ResetPasswordService:
 
         return map_to_jwt_response(token)
 
-    def verify(self, email: str, code: str):
+    def verify(self, email: str, code: str) -> Message:
         is_verified = self.code_service.validate(email, code)
 
         if not is_verified:
@@ -43,7 +44,7 @@ class ResetPasswordService:
 
         return map_to_message_response("Code verified successfully")
 
-    def finish(self, email: str, new_password: str):
+    def finish(self, email: str, new_password: str) -> Message:
         has_active_code = self.code_service.is_active(email)
 
         if not has_active_code:

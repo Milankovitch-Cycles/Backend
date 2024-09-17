@@ -8,6 +8,7 @@ from src.modules.auth.mappers.auth_mappers import (
     map_to_jwt_response,
     map_to_message_response,
 )
+from src.common.types.types import Token, Message
 
 
 class RegisterService:
@@ -17,7 +18,7 @@ class RegisterService:
         self.encryption_service = EncryptionService()
         self.jwt_service = JwtService()
 
-    def start(self, email: str, password: str):
+    def start(self, email: str, password: str) -> Token:
         user = self.user_service.get(email)
 
         if user:
@@ -39,7 +40,7 @@ class RegisterService:
 
         return map_to_jwt_response(token)
 
-    def finish(self, email: str, password: str, code: str):
+    def finish(self, email: str, password: str, code: str) -> Message:
         user = self.user_service.get(email)
 
         if user:
