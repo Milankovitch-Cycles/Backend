@@ -7,3 +7,6 @@ pydantic==2.9.2
 python-dotenv==1.0.1
 scikit_learn==1.5.2
 SQLAlchemy==2.0.32
+lasio===0.31
+uvicorn===0.30.6
+PyJWT===2.9.0
