@@ -1,4 +1,5 @@
 from fastapi import Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from src.modules.auth.dependencies.dependencies import (
     get_user_in_registration_flow,
     get_user_in_reset_password_flow,
@@ -23,7 +24,7 @@ class AuthController:
     def start_registration(
         self,
         register_request_dto: StartRegistrationRequestDto,
-    )-> Token:
+    ) -> Token:
         email, password = (register_request_dto.email, register_request_dto.password)
 
         return self.auth_service.start_registration(email, password)
@@ -42,6 +43,14 @@ class AuthController:
         login_request_dto: LoginRequestDto,
     ) -> Token:
         email, password = (login_request_dto.email, login_request_dto.password)
+
+        return self.auth_service.login(email, password)
+
+    def token(
+        self,
+        form_data: OAuth2PasswordRequestForm = Depends(),
+    ) -> Token:
+        email, password = (form_data.username, form_data.password)
 
         return self.auth_service.login(email, password)
 
