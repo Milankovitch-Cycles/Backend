@@ -49,7 +49,7 @@ def get_user(
 
 
 def get_user_in_login_flow(
-    token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login")),
+    token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/token")),
 ):
     message = jwt_service.decode(token)
     validate_permissions(message, Permissions.LOGIN.value)

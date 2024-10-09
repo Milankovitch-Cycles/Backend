@@ -10,3 +10,4 @@ SQLAlchemy==2.0.32
 lasio===0.31
 uvicorn===0.30.6
 PyJWT===2.9.0
+python-multipart===0.0.12
