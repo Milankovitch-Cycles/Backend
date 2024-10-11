@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import HTTPException
 from pandas import DataFrame
 
@@ -6,7 +6,7 @@ class DataframeService:
     def get_columns(self, dataframe: DataFrame) -> List[str]:
         return dataframe.columns.tolist()
     
-    def filter_dataframe_by_index(self, dataframe: DataFrame, start: int, end: int) -> DataFrame:
+    def filter_dataframe_by_index(self, dataframe: DataFrame, start: Optional[int], end: Optional[int]) -> DataFrame:
         if start is not None and end is not None and start > end:
             raise HTTPException(status_code=400, detail=f"Start index must be less than end index")
         
