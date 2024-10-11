@@ -1,6 +1,7 @@
 from src.common.entities.user_entity import UserEntity
 from src.common.entities.well_entity import WellEntity
 from src.common.config.config import session
+import lasio
 
 
 class WellService:
@@ -15,3 +16,8 @@ class WellService:
         session.add(well)
         session.commit()
         return well
+
+    def get_dataframe(self, id: int, user: UserEntity):
+        well = self.get_well(id, user)
+        file = lasio.read(well.filename)
+        return file.df()
