@@ -15,3 +15,5 @@ SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
 
 SMTP_SERVER = os.environ.get("SMTP_SERVER")
 SMTP_PORT = int(os.environ.get("SMTP_PORT"))
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
