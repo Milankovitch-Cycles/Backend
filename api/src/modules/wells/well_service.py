@@ -10,8 +10,9 @@ class WellService:
     def get_well(self, id: int, user: UserEntity):
         return session.query(WellEntity).filter(WellEntity.id == id).first()
 
-    def create_well(self, name: str, description: str, filename: str, user: UserEntity):
+    def create_well(self, name: str, description: str, filename: str, user: UserEntity) -> WellEntity:
         well = WellEntity(name=name, description=description, filename=filename, user_id=user.id)
         session.add(well)
         session.commit()
+        session.refresh(well)
         return well
