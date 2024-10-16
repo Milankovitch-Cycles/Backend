@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from src.modules.auth.dependencies.dependencies import Permissions
-from src.common.services.crypto.crypto_service import EncryptionService
+from src.common.services.hash.hash_service import HashService
 from src.common.services.jwt.jwt_service import JwtService
 from src.modules.users.user_service import UserService
 from src.common.types.types import Token
@@ -12,7 +12,7 @@ from src.modules.auth.mappers.auth_mappers import (
 class LoginService:
     def __init__(self):
         self.user_service = UserService()
-        self.encryption_service = EncryptionService()
+        self.hash_service = HashService()
         self.jwt_service = JwtService()
 
     def login(self, email: str, password: str) -> Token:
@@ -24,9 +24,9 @@ class LoginService:
                 detail="We are sorry, an error occurred during the login process",
             )
 
-        decrypted_password = self.encryption_service.decrypt(user.password)
+        hashed_password = self.hash_service.hash(password)
 
-        if decrypted_password != password:
+        if user.password != hashed_password:
             raise HTTPException(
                 status_code=500,
                 detail="We are sorry, an error occurred during the login process",
