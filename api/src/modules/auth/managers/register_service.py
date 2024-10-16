@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from src.modules.auth.dependencies.dependencies import Permissions
 from src.common.services.jwt.jwt_service import JwtService
 from src.modules.codes.code_service import CodeService
-from src.common.services.crypto.crypto_service import EncryptionService
+from src.common.services.hash.hash_service import HashService
 from src.modules.users.user_service import UserService
 from src.modules.auth.mappers.auth_mappers import (
     map_to_jwt_response,
@@ -15,7 +15,7 @@ class RegisterService:
     def __init__(self):
         self.user_service = UserService()
         self.code_service = CodeService()
-        self.encryption_service = EncryptionService()
+        self.hash_service = HashService()
         self.jwt_service = JwtService()
 
     def start(self, email: str, password: str) -> Token:
@@ -27,7 +27,7 @@ class RegisterService:
                 detail="We are sorry, an error occurred during the registration process",
             )
 
-        hashed_password = self.encryption_service.encrypt(password)
+        hashed_password = self.hash_service.hash(password)
         token = self.jwt_service.encode(
             {
                 "email": email,

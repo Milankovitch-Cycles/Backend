@@ -7,8 +7,6 @@ JWT_SECRET = os.environ.get("JWT_SECRET")
 JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM")
 JWT_EXPIRES_IN = int(os.environ.get("JWT_EXPIRES_IN"))
 
-CIPHER_KEY = os.environ.get("CIPHER_KEY")
-
 SENDER_NAME = os.environ.get("SENDER_NAME")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")

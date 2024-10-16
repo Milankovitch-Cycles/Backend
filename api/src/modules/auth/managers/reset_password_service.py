@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from src.modules.auth.dependencies.dependencies import Permissions
-from src.common.services.crypto.crypto_service import EncryptionService
+from src.common.services.hash.hash_service import HashService
 from src.modules.codes.code_service import CodeService
 from src.common.services.jwt.jwt_service import JwtService
 from src.modules.auth.mappers.auth_mappers import (
@@ -16,7 +16,7 @@ class ResetPasswordService:
     def __init__(self):
         self.user_service = UserService()
         self.code_service = CodeService()
-        self.encryption_service = EncryptionService()
+        self.hash_service = HashService()
         self.jwt_service = JwtService()
 
     def start(self, email: str) -> Token:
@@ -53,7 +53,7 @@ class ResetPasswordService:
                 detail="You must verify your code before changing your password",
             )
 
-        password_hash = self.encryption_service.encrypt(new_password)
-        self.user_service.update(email, {"password": password_hash})
+        hashed_password = self.hash_service.hash(new_password)
+        self.user_service.update(email, {"password": hashed_password})
 
         return map_to_message_response("Password updated successfully")
