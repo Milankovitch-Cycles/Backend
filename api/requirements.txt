@@ -11,3 +11,4 @@ lasio===0.31
 uvicorn===0.30.6
 PyJWT===2.9.0
 python-multipart===0.0.12
+aio-pika===9.4.3
