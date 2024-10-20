@@ -19,8 +19,8 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./api:/app/api
-      - ./db:/app/api/db
+      - ./api:/app
+      - ./db:/app/db
     depends_on:
       rabbitmq:
         condition: service_healthy
