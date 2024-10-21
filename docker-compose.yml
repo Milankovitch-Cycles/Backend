@@ -24,3 +24,9 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+
+  worker:
+    build: ./worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
