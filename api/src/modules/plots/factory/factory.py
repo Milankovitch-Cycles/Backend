@@ -8,5 +8,15 @@ class Factory:
     
     @staticmethod
     def make_multiplot():
-        strategies = [Depth("GR"), Histogram("GR"), Scatter("GR"), Null()]
+        strategies = [
+            Depth("GR"), 
+            Histogram("GR"), 
+            Scatter("GR"),
+            Depth("DEN"),
+            Histogram("DEN"),
+            Scatter("DEN"),
+            Depth("NEU"),
+            Histogram("NEU"),
+            Scatter("NEU"), 
+            Null()]
         return MultiplotService(strategies)
