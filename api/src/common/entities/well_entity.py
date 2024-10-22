@@ -17,12 +17,6 @@ class WellEntity(Base):
     created_at = Column(DateTime, default=func.now(), nullable=False)
 
 
-class CreateWellModel(BaseModel):
-    name: str | None = None
-    description: str | None = None
-    filename: str | None = None
-
-
 class GetWellModel(BaseModel):
     id: int | None
     name: str | None
