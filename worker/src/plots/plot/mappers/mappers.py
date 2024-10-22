@@ -9,3 +9,6 @@ descriptions = {
     "RMED": "Medium Resistivity",
     "FREQ": "Frequency",
 }
+
+def map_code_to_description(code: str) -> str:
+    return descriptions[code]

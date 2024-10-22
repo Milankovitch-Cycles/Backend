@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import os
 from pandas import DataFrame
 from matplotlib import pyplot as plt
 

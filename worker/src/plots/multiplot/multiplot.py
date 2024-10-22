@@ -1,7 +1,7 @@
 from typing import List
 from pandas import DataFrame
-from src.modules.plots.plot.plot import PlotService
-from src.modules.plots.plot.strategies.strategy import PlotStrategy
+from worker.src.plots.plot.plot import PlotService
+from worker.src.plots.plot.strategies.strategy import PlotStrategy
 
 class MultiplotService():
     def __init__(self, strategies: List[PlotStrategy]):
@@ -20,3 +20,12 @@ class MultiplotService():
             images.append(image_path)
 
         return images            
+    
+# TO-DO: Remove this comment
+
+# Example to use
+
+# multiplot = Factory.make_multiplot()
+# dataframe = lasio.read("data/data.LAS").df()
+# graphs = multiplot.plot(dataframe, "./graphics-test")
+        

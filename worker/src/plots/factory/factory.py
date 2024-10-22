@@ -1,8 +1,9 @@
-from src.modules.plots.multiplot.multiplot import MultiplotService
-from src.modules.plots.plot.strategies.depth import Depth
-from src.modules.plots.plot.strategies.histogram import Histogram
-from src.modules.plots.plot.strategies.null import Null
-from src.modules.plots.plot.strategies.scatter import Scatter
+from worker.src.plots.multiplot.multiplot import MultiplotService
+from worker.src.plots.plot.strategies.depth import Depth
+from worker.src.plots.plot.strategies.histogram import Histogram
+from worker.src.plots.plot.strategies.null import Null
+from worker.src.plots.plot.strategies.scatter import Scatter
+
 
 class Factory:
     
@@ -18,5 +19,7 @@ class Factory:
             Depth("NEU"),
             Histogram("NEU"),
             Scatter("NEU"), 
-            Null()]
+            Null()
+        ]
+        
         return MultiplotService(strategies)
