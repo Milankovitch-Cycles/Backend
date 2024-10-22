@@ -26,7 +26,7 @@ class Worker:
         self.input_queue = await self.channel.declare_queue(self.input_queue_name, durable=True)
         self.output_queue = await self.channel.declare_queue(self.output_queue_name, durable=True)
 
-        logging.info(f"Worker started. Consuming results from queue: {self.input_queue.name}")
+        logging.info(f"Worker started. Consuming messages from queue: {self.input_queue.name}")
         async with self.input_queue.iterator() as queue_iter:
             async for message in queue_iter:
                 async with message.process():
