@@ -1,7 +1,7 @@
 from typing import Optional
 from pandas import DataFrame
-from src.modules.plots.plot.strategies.strategy import PlotStrategy
 from src.modules.plots.plot.utils.utils import create_image
+from src.modules.plots.plot.strategies.strategy import PlotStrategy
 
 class PlotService:
     def __init__(self):
@@ -13,7 +13,7 @@ class PlotService:
     def set_strategy(self, strategy: PlotStrategy):
         self.strategy = strategy
     
-    def plot(self, dataframe: DataFrame):
+    def plot(self, dataframe: DataFrame, base_path: str):
         self.strategy.plot(dataframe)
         
-        return create_image()
+        return create_image(f"{base_path}/{self.strategy.path}")
