@@ -1,7 +1,32 @@
 services:
+  rabbitmq:
+    image: rabbitmq:4.0.2-management    
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 2s
+      timeout: 30s
+      retries: 15
+
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   api:
-    build: ./api
+    build: ./api    
     ports:
       - 8080:8080
     volumes:
-      - ./:/api/
+      - ./api:/app
+      - ./db:/app/db
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  worker:
+    build: ./worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
