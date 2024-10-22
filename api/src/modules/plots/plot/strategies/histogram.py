@@ -5,9 +5,9 @@ from src.modules.plots.data import descriptions
 
 class Histogram(PlotStrategy):
     def __init__(self, column: str):
+        super().__init__(path=f"{descriptions[column].replace(' ', '-')}/histogram.png")
         self.column = column
     
     def plot(self, dataframe: DataFrame):
         plt.hist(dataframe[self.column], bins=30, color="blue", edgecolor="black", alpha=0.5)
-        self.set_labels(descriptions[self.column], descriptions["FREQ"])    
-  
+        self.set_labels(descriptions[self.column], descriptions["FREQ"])
