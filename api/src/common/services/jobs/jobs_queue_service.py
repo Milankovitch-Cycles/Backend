@@ -1,5 +1,8 @@
 import aio_pika
 import logging
+import json
+from src.common.entities.job_entity import JobEntity
+from fastapi.encoders import jsonable_encoder
 from settings import RABBITMQ_HOST, RABBITMQ_PORT
 
 JOBS_QUEUE_NAME = 'jobs_queue'
@@ -20,10 +23,10 @@ class _JobsQueueService:
         self.jobs_queue = await self.channel.declare_queue(JOBS_QUEUE_NAME, durable=True)
         logging.info("JobsQueueService started")
 
-    async def queue_job(self, job: str):
-        # TODO: Transform job into a job message for processing
+    async def queue_job(self, job: JobEntity):
+        body = json.dumps(jsonable_encoder(job)).encode()
         await self.channel.default_exchange.publish(
-            aio_pika.Message(body=job.encode()),
+            aio_pika.Message(body),
             routing_key=self.jobs_queue.name,
         )
 
