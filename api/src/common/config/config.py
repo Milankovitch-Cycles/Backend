@@ -4,6 +4,7 @@ from src.common.entities import Base
 from src.common.entities.user_entity import UserEntity
 from src.common.entities.code_entity import CodeEntity
 from src.common.entities.well_entity import WellEntity
+from src.common.entities.job_entity import JobEntity
 from settings import DATABASE_URL
 
 try:

@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 from datetime import datetime
 from sqlalchemy import Column, DateTime, Integer, String, func, ForeignKey
+from sqlalchemy.orm import relationship
+from typing import List
+from .job_entity import GetJobModel
+
 from . import Base
 
 
@@ -15,6 +19,7 @@ class WellEntity(Base):
     status = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
+    jobs = relationship("JobEntity", back_populates="well")
 
 
 class GetWellModel(BaseModel):
@@ -26,3 +31,4 @@ class GetWellModel(BaseModel):
     status: str | None
     user_id: int | None
     created_at: datetime | None
+    jobs: List["GetJobModel"] | None
