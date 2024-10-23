@@ -7,6 +7,9 @@ from src.modules.wells.well_routes import wells
 from src.common.services.jobs.jobs_results_consumer import jobs_results_consumer
 from src.common.services.jobs.jobs_queue_service import jobs_queue_service
 from src.common.config.logging_config import setup_logging
+from fastapi.staticfiles import StaticFiles
+import os
+import settings
 
 
 @asynccontextmanager
@@ -35,3 +38,5 @@ app.add_middleware(
 
 app.include_router(auth)
 app.include_router(wells)
+
+app.mount("/static", StaticFiles(directory=os.path.dirname(__file__)+'/'+settings.STORAGE_PATH), name="static")
