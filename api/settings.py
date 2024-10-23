@@ -17,3 +17,5 @@ SMTP_PORT = int(os.environ.get("SMTP_PORT"))
 DATABASE_URL = os.environ.get("DATABASE_URL")
 RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST")
 RABBITMQ_PORT = os.environ.get("RABBITMQ_PORT")
+
+STORAGE_PATH = os.environ.get("STORAGE_PATH")
