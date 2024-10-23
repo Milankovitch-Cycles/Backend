@@ -1,7 +1,9 @@
 
 import logging
 import aio_pika
+from .job import Job
 
+# TODO: extract these into env vars
 RABBITMQ_HOST = "rabbitmq"
 RABBITMQ_PORT = "5672"
 
@@ -38,10 +40,9 @@ class Worker:
         logging.info("Worker stopped")
 
     async def process_message(self, message):
-        # TODO: Implement processing of jobs
-        logging.info(message.body)
-
-        result = message.body
+        job = Job.model_validate_json(message.body.decode())
+        logging.info(f"Processing job: {job}")
+        result = job.model_dump_json().encode()
         # Publish the result to the output queue
         await self.channel.default_exchange.publish(
             aio_pika.Message(body=result),
