@@ -1,7 +1,7 @@
 from typing import List
 from pandas import DataFrame
-from worker.src.plots.plot.plot import PlotService
-from worker.src.plots.plot.strategies.strategy import PlotStrategy
+from src.plots.plot.plot import PlotService
+from src.plots.plot.strategies.strategy import PlotStrategy
 
 class MultiplotService():
     def __init__(self, strategies: List[PlotStrategy]):

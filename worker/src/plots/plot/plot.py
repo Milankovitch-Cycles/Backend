@@ -1,7 +1,7 @@
 from typing import Optional
 from pandas import DataFrame
-from worker.src.plots.plot.strategies.strategy import PlotStrategy
-from worker.src.plots.plot.utils.utils import create_image
+from src.plots.plot.strategies.strategy import PlotStrategy
+from src.plots.plot.utils.utils import create_image
 
 
 class PlotService:

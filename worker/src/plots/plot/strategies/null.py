@@ -1,6 +1,6 @@
 import missingno as mnso
 from pandas import DataFrame
-from worker.src.plots.plot.strategies.strategy import PlotStrategy
+from src.plots.plot.strategies.strategy import PlotStrategy
 
 class Null(PlotStrategy):
     def __init__(self):
