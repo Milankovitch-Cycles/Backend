@@ -1,6 +1,8 @@
 
 import logging
 import aio_pika
+import lasio
+from src.plots.factory.factory import Factory
 from .job import Job
 
 # TODO: extract these into env vars
@@ -16,6 +18,7 @@ class Worker:
         self.channel = None
         self.input_queue = None
         self.output_queue = None
+        self.multiplot = Factory.make_multiplot()
 
     async def start(self):
         self.connection = await aio_pika.connect_robust(
@@ -44,6 +47,15 @@ class Worker:
         logging.info(f"Processing job: {job}")
         result = job.model_dump_json().encode()
         # Publish the result to the output queue
+        
+        # TO-DO: Dont know why it doesnt work with STORAGE_PATH (Check this)
+        input_path = f"./static/{job.well_id}/{job.parameters["filename"]}"
+        output_path = f"./static/{job.well_id}/{job.id}/graphs"
+        
+        dataframe = lasio.read(input_path).df()
+        self.multiplot.plot(dataframe, output_path)
+        
+        
         await self.channel.default_exchange.publish(
             aio_pika.Message(body=result),
             routing_key=self.output_queue.name,
