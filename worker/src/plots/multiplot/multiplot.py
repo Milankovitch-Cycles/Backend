@@ -20,12 +20,3 @@ class MultiplotService():
             images.append(image_path)
 
         return images            
-    
-# TO-DO: Remove this comment
-
-# Example to use
-
-# multiplot = Factory.make_multiplot()
-# dataframe = lasio.read("data/data.LAS").df()
-# graphs = multiplot.plot(dataframe, "./graphics-test")
-        
