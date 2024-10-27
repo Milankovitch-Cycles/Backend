@@ -49,10 +49,10 @@ class Worker:
         # Publish the result to the output queue
         
         # TO-DO: Dont know why it doesnt work with STORAGE_PATH (Check this)
-        input_path = f"./static/{job.well_id}/{job.parameters["filename"]}"
-        output_path = f"./static/{job.well_id}/{job.id}/graphs"
+        file_path = f"./static/{job.well_id}/{job.parameters["filename"]}"
+        dataframe = lasio.read(file_path).df()
         
-        dataframe = lasio.read(input_path).df()
+        output_path = f"./static/{job.well_id}/{job.id}/graphs"
         self.multiplot.plot(dataframe, output_path)
         
         
@@ -60,3 +60,4 @@ class Worker:
             aio_pika.Message(body=result),
             routing_key=self.output_queue.name,
         )
+        
