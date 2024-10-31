@@ -9,12 +9,12 @@ class Pagination(BaseModel):
     next_offset: int
     total_pages: int
     
-def get_pagination(limit: int, offset: int, data: List[object]) -> Pagination:
+def get_pagination(limit: int, offset: int, count: int) -> Pagination:
     return Pagination(
         limit=limit,
         offset=offset,
-        total=len(data),
+        total=count,
         previous_offset=offset - limit if offset - limit >= 0 else 0,
-        next_offset=offset + limit if offset + limit < len(data) else 0,
-        total_pages=len(data) // limit)
+        next_offset=offset + limit if offset + limit < count else 0,
+        total_pages=count // limit)
     

@@ -20,8 +20,8 @@ class WellController:
         offset: int = 0,
         user: UserEntity = Depends(get_user_in_login_flow),
     ) -> GetWellsDto:
-        wells = self.well_service.get_wells(limit, offset, user)
-        pagination = get_pagination(limit, offset, wells)
+        wells, count = self.well_service.get_wells(limit, offset, user)
+        pagination = get_pagination(limit, offset, count)
         return {"wells": wells, "pagination": pagination}
 
     def get_well(
