@@ -19,7 +19,7 @@ class WellEntity(Base):
     status = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    jobs = relationship("JobEntity", back_populates="well")
+    jobs = relationship("JobEntity", back_populates="well", cascade="all, delete-orphan")
 
 
 class GetWellModel(BaseModel):

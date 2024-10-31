@@ -47,6 +47,16 @@ class WellController:
                                                       user=user)
         await jobs_queue_service.queue_job(job)
         return new_well
+    
+    def delete_well(
+        self,
+        id: int,
+        user: UserEntity = Depends(get_user_in_login_flow),
+    ):
+        self.well_service.delete_well(id, user)
+        self.well_service.delete_well_file(id)
+        
+        return { "message": "Well deleted" }
 
     def get_well_jobs(
         self,
