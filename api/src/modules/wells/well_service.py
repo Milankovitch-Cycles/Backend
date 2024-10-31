@@ -3,7 +3,7 @@ from src.common.entities.well_entity import WellEntity
 from src.common.entities.job_entity import JobEntity
 from src.common.config.config import session
 from settings import STORAGE_PATH
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 import shutil
 from pathlib import Path
 
@@ -24,6 +24,8 @@ class WellService:
     
     def update_well(self, well_id: int, data, user: UserEntity) -> WellEntity:
         well = session.query(WellEntity).filter(WellEntity.id == well_id and WellEntity.user_id == user.id).first()
+        if not well:
+            raise HTTPException(status_code=404, detail="Well not found")
         for key, value in data.items():
             setattr(well, key, value)
         session.commit()
