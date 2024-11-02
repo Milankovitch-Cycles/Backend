@@ -10,8 +10,11 @@ from pathlib import Path
 
 
 class WellService:
-    def get_wells(self, limit, offset, user: UserEntity) -> List[WellEntity]:
-        return session.query(WellEntity).order_by(WellEntity.created_at.desc()).limit(limit).offset(offset).all()
+    def get_wells(self, limit, offset, user: UserEntity)-> List[WellEntity]:
+        wells_query = session.query(WellEntity).filter(WellEntity.user_id == user.id)
+        wells = wells_query.order_by(WellEntity.created_at.desc()).limit(limit).offset(offset).all()
+        count = wells_query.count()
+        return wells, count
 
     def get_well(self, id: int, user: UserEntity) -> WellEntity:
         return session.query(WellEntity).filter(WellEntity.id == id).first()

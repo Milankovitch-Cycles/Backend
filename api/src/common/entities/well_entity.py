@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from sqlalchemy import Column, DateTime, Integer, String, func, ForeignKey
 from sqlalchemy.orm import relationship
+from src.common.utils.pagination import Pagination
 from typing import List
 from .job_entity import GetJobModel
 
@@ -32,3 +33,7 @@ class GetWellModel(BaseModel):
     user_id: int | None
     created_at: datetime | None
     jobs: List["GetJobModel"] | None
+
+class GetWellsDto(BaseModel):
+    wells: List[GetWellModel]
+    pagination: Pagination
