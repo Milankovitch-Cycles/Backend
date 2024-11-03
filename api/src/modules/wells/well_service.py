@@ -33,7 +33,7 @@ class WellService:
         session.refresh(job)
         return job
 
-    def get_job(self, well_id: int, id: int, user: UserEntity):
+    def get_job(self, well_id: int, id: int, user: UserEntity) -> JobEntity:
         return session.query(JobEntity).filter(JobEntity.id == id, JobEntity.well_id == well_id).first()
 
     def save_well_file(self, well_id: int, file: UploadFile):

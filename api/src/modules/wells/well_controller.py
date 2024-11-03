@@ -1,6 +1,8 @@
 
+from src.common.utils.files import list_files
 from fastapi import Depends, HTTPException, Form, File, UploadFile
 from typing import Annotated
+from settings import STORAGE_PATH
 from src.common.utils.pagination import get_pagination
 from src.common.entities.user_entity import UserEntity
 from src.common.entities.well_entity import GetWellModel, GetWellsDto
@@ -69,8 +71,17 @@ class WellController:
     ) -> GetJobModel:
         job = self.well_service.get_job(id, job_id, user)
         if not job:
-            raise HTTPException(status_code=404, detail="Job not found")
-        return job
+            raise HTTPException(status_code=404, detail="Job not found")        
+        return GetJobModel(
+            id=job.id,
+            user_id=job.user_id,
+            type=job.type,
+            parameters=job.parameters,
+            result=job.result,
+            status=job.status,
+            created_at=job.created_at,
+            graphs=list_files(f"{STORAGE_PATH}/{id}/{job_id}/graphs")
+        )
 
     async def create_well_job(
         self,
