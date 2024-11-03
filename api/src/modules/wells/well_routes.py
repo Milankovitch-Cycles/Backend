@@ -8,7 +8,7 @@ controller = WellController()
 # Wells
 wells.add_api_route("/", controller.get_wells, methods=["GET"])
 wells.add_api_route("/{id}", controller.get_well, methods=["GET"])
-
+wells.add_api_route("/{id}", controller.update_well, methods=["PATCH"])
 wells.add_api_route("/", controller.create_well, methods=["POST"])
 
 
