@@ -1,6 +1,9 @@
 import os
 
 def list_files(path):
+    if not os.path.exists(path):
+        return []
+    
     if os.path.isfile(path):
         return [os.path.realpath(path)]
     

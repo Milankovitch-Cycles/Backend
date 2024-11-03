@@ -31,7 +31,7 @@ class GetWellModel(BaseModel):
     status: str | None
     user_id: int | None
     created_at: datetime | None
-    jobs: List["GetJobModel"] | None
+    jobs: List[GetJobModel] | None
 
 class GetWellsDto(BaseModel):
     wells: List[GetWellModel]
