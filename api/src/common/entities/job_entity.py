@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 from sqlalchemy import Column, DateTime, Integer, String, func, ForeignKey, JSON
@@ -32,3 +33,8 @@ class GetJobModel(BaseModel):
 class CreateJobModel(BaseModel):
     type: str
     parameters: dict | None
+
+class UpdateWellDto(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    
