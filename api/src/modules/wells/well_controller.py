@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException, Form, File, UploadFile
 from typing import Annotated
 from src.common.utils.pagination import get_pagination
 from src.common.entities.user_entity import UserEntity
-from src.common.entities.well_entity import GetWellModel, GetWellsDto, WellEntity
+from src.common.entities.well_entity import GetWellModel, GetWellsDto
 from src.common.entities.job_entity import GetJobModel, CreateJobModel, JobEntity, UpdateWellDto
 from src.modules.auth.dependencies.dependencies import get_user_in_login_flow
 from src.modules.wells.well_service import WellService
@@ -67,7 +67,7 @@ class WellController:
         id: int,
         data: UpdateWellDto,
         user: UserEntity = Depends(get_user_in_login_flow),
-    ) -> WellEntity:
+    ) -> GetWellModel:
         return self.well_service.update_well(id, data.model_dump(), user)
 
     def get_well_jobs(
