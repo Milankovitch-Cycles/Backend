@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from src.common.entities.user_entity import UserEntity
 from src.common.entities.well_entity import WellEntity
 from src.common.entities.job_entity import JobEntity
@@ -25,6 +26,14 @@ class WellService:
         session.refresh(well)
         return well
     
+    def delete_well(self, id: int, user: UserEntity) -> WellEntity:
+        well = session.query(WellEntity).filter(WellEntity.id == id and WellEntity.user_id == user.id).first()
+        if not well:
+            raise HTTPException(status_code=404, detail="Well not found")
+        session.delete(well)
+        session.commit()
+        return well
+
     def update_well(self, well_id: int, data, user: UserEntity) -> WellEntity:
         well = session.query(WellEntity).filter(WellEntity.id == well_id and WellEntity.user_id == user.id).first()
         if not well:
@@ -51,3 +60,7 @@ class WellService:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
+            
+    def delete_well_file(self, well_id: int):
+        path = f"{STORAGE_PATH}/{well_id}"
+        shutil.rmtree(path)
