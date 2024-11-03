@@ -3,8 +3,9 @@ from src.common.utils.files import list_files
 from fastapi import Depends, HTTPException, Form, File, UploadFile
 from typing import Annotated
 from settings import STORAGE_PATH
+from src.common.utils.pagination import get_pagination
 from src.common.entities.user_entity import UserEntity
-from src.common.entities.well_entity import GetWellModel
+from src.common.entities.well_entity import GetWellModel, GetWellsDto
 from src.common.entities.job_entity import GetJobModel, CreateJobModel, JobEntity
 from src.modules.auth.dependencies.dependencies import get_user_in_login_flow
 from src.modules.wells.well_service import WellService
@@ -20,8 +21,10 @@ class WellController:
         limit: int = 10,
         offset: int = 0,
         user: UserEntity = Depends(get_user_in_login_flow),
-    ) -> list[GetWellModel]:
-        return self.well_service.get_wells(limit, offset, user)
+    ) -> GetWellsDto:
+        wells, count = self.well_service.get_wells(limit, offset, user)
+        pagination = get_pagination(limit, offset, count)
+        return {"wells": wells, "pagination": pagination}
 
     def get_well(
         self,
