@@ -1,10 +1,11 @@
 from typing import List
+from http.client import HTTPException
 from src.common.entities.user_entity import UserEntity
 from src.common.entities.well_entity import WellEntity
 from src.common.entities.job_entity import JobEntity
 from src.common.config.config import session
 from settings import STORAGE_PATH
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 import shutil
 from pathlib import Path
 
@@ -25,7 +26,25 @@ class WellService:
         session.commit()
         session.refresh(well)
         return well
+    
+    def delete_well(self, id: int, user: UserEntity) -> WellEntity:
+        well = session.query(WellEntity).filter(WellEntity.id == id and WellEntity.user_id == user.id).first()
+        if not well:
+            raise HTTPException(status_code=404, detail="Well not found")
+        session.delete(well)
+        session.commit()
+        return well
 
+    def update_well(self, well_id: int, data, user: UserEntity) -> WellEntity:
+        well = session.query(WellEntity).filter(WellEntity.id == well_id and WellEntity.user_id == user.id).first()
+        if not well:
+            raise HTTPException(status_code=404, detail="Well not found")
+        for key, value in data.items():
+            setattr(well, key, value)
+        session.commit()
+        session.refresh(well)
+        return well
+        
     def create_job(self, well_id: int, type: str, parameters: dict, user: UserEntity):
         job = JobEntity(well_id=well_id, type=type, parameters=parameters, user_id=user.id)
         session.add(job)
@@ -42,3 +61,7 @@ class WellService:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
+            
+    def delete_well_file(self, well_id: int):
+        path = f"{STORAGE_PATH}/{well_id}"
+        shutil.rmtree(path)
