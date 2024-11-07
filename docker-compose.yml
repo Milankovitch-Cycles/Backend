@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: rabbitmq:4.0.2-management    
+    image: rabbitmq:4.0.2-management
     ports:
       - 5672:5672
       - 15672:15672
@@ -15,7 +15,7 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
 
   api:
-    build: ./api    
+    build: ./api
     ports:
       - 8080:8080
     volumes:
@@ -31,3 +31,6 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    volumes:
+      - ./worker:/worker
+      - ./static:/worker/static

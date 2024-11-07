@@ -7,6 +7,7 @@ from src.common.entities.well_entity import GetWellModel, GetWellsDto
 from src.common.entities.job_entity import GetJobModel, CreateJobModel, JobEntity, UpdateWellDto
 from src.modules.auth.dependencies.dependencies import get_user_in_login_flow
 from src.modules.wells.well_service import WellService
+from src.modules.wells.mappers.well_mapper import map_to_job_with_graphs, map_to_well_with_graphs
 from src.common.services.jobs.jobs_queue_service import jobs_queue_service
 from src.common.types.types import Message
 
@@ -23,7 +24,7 @@ class WellController:
     ) -> GetWellsDto:
         wells, count = self.well_service.get_wells(limit, offset, user)
         pagination = get_pagination(limit, offset, count)
-        return {"wells": wells, "pagination": pagination}
+        return {"wells": [map_to_well_with_graphs(well) for well in wells], "pagination": pagination}
 
     def get_well(
         self,
@@ -32,8 +33,8 @@ class WellController:
     ) -> GetWellModel:
         well = self.well_service.get_well(id, user)
         if not well:
-            raise HTTPException(status_code=404, detail="Well not found")
-        return well
+            raise HTTPException(status_code=404, detail="Well not found") 
+        return map_to_well_with_graphs(well)
 
     async def create_well(
         self,
@@ -78,7 +79,7 @@ class WellController:
         well = self.well_service.get_well(id, user)
         if not well:
             raise HTTPException(status_code=404, detail="Well not found")
-        return well.jobs
+        return [map_to_job_with_graphs(job) for job in well.jobs]
 
     def get_well_job(
         self,
@@ -88,8 +89,8 @@ class WellController:
     ) -> GetJobModel:
         job = self.well_service.get_job(id, job_id, user)
         if not job:
-            raise HTTPException(status_code=404, detail="Job not found")
-        return job
+            raise HTTPException(status_code=404, detail="Job not found")        
+        return map_to_job_with_graphs(job)
 
     async def create_well_job(
         self,
