@@ -18,7 +18,7 @@ class WellService:
         return wells, count
 
     def get_well(self, id: int, user: UserEntity) -> WellEntity:
-        return session.query(WellEntity).filter(WellEntity.id == id).first()
+        return session.query(WellEntity).filter(WellEntity.id == id and WellEntity.user_id == user.id).first()
 
     def create_well(self, name: str, description: str, filename: str, user: UserEntity) -> WellEntity:
         well = WellEntity(name=name, description=description, filename=filename, user_id=user.id)
@@ -53,7 +53,7 @@ class WellService:
         return job
 
     def get_job(self, well_id: int, id: int, user: UserEntity) -> JobEntity:
-        return session.query(JobEntity).filter(JobEntity.id == id, JobEntity.well_id == well_id).first()
+        return session.query(JobEntity).filter(JobEntity.id == id and JobEntity.well_id == well_id and JobEntity.user_id == user.id).first()
 
     def save_well_file(self, well_id: int, file: UploadFile):
         # Save file to disk
