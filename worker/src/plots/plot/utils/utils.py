@@ -8,5 +8,6 @@ def create_image(path):
 
     plt.savefig(path)
     plt.clf()
+    plt.close()
     
     return path
