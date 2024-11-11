@@ -91,6 +91,13 @@ class WellController:
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")        
         return map_to_job_with_graphs(job)
+    
+    def get_user_jobs(
+        self,
+        user: UserEntity = Depends(get_user_in_login_flow),
+    ):
+        jobs = self.well_service.get_jobs_by_user(user)
+        return [map_to_job_with_graphs(job) for job in jobs]
 
     async def create_well_job(
         self,

@@ -44,6 +44,17 @@ class WellService:
         session.commit()
         session.refresh(well)
         return well
+    
+    
+    def update_job(self, job_id: int, data, user: UserEntity) -> WellEntity:
+        job = session.query(JobEntity).filter(JobEntity.id == job_id and JobEntity.user_id == user.id).first()
+        if not job:
+            raise HTTPException(status_code=404, detail="Well not found")
+        for key, value in data.items():
+            setattr(job, key, value)
+        session.commit()
+        session.refresh(job)
+        return job
         
     def create_job(self, well_id: int, type: str, parameters: dict, user: UserEntity):
         job = JobEntity(well_id=well_id, type=type, parameters=parameters, user_id=user.id)
@@ -54,6 +65,9 @@ class WellService:
 
     def get_job(self, well_id: int, id: int, user: UserEntity) -> JobEntity:
         return session.query(JobEntity).filter(JobEntity.id == id and JobEntity.well_id == well_id and JobEntity.user_id == user.id).first()
+    
+    def get_jobs_by_user(self, user: UserEntity) -> List[JobEntity]:
+        return session.query(JobEntity).filter(JobEntity.user_id == user.id).all()
 
     def save_well_file(self, well_id: int, file: UploadFile):
         # Save file to disk
