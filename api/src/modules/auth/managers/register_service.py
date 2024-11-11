@@ -19,7 +19,7 @@ class RegisterService:
         self.jwt_service = JwtService()
 
     def start(self, email: str, password: str) -> Token:
-        user = self.user_service.get(email)
+        user = self.user_service.get_by_email(email)
 
         if user:
             raise HTTPException(
@@ -41,7 +41,7 @@ class RegisterService:
         return map_to_jwt_response(token)
 
     def finish(self, email: str, password: str, code: str) -> Message:
-        user = self.user_service.get(email)
+        user = self.user_service.get_by_email(email)
 
         if user:
             raise HTTPException(

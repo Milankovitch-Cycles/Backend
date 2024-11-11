@@ -20,7 +20,7 @@ class ResetPasswordService:
         self.jwt_service = JwtService()
 
     def start(self, email: str) -> Token:
-        user = self.user_service.get(email)
+        user = self.user_service.get_by_email(email)
 
         if user is None:
             raise HTTPException(
