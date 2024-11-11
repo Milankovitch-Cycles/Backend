@@ -94,10 +94,13 @@ class WellController:
     
     def get_user_jobs(
         self,
+        limit: int = 10,
+        offset: int = 0,
         user: UserEntity = Depends(get_user_in_login_flow),
     ):
-        jobs = self.well_service.get_jobs_by_user(user)
-        return [map_to_job_with_graphs(job) for job in jobs]
+        jobs, count = self.well_service.get_jobs_by_user(limit, offset, user)
+        pagination = get_pagination(limit, offset, count)
+        return [{"jobs": [map_to_job_with_graphs(job) for job in jobs], "pagination": pagination}]
 
     async def create_well_job(
         self,

@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 class WellService:
-    def get_wells(self, limit, offset, user: UserEntity)-> List[WellEntity]:
+    def get_wells(self, limit: int, offset: int, user: UserEntity)-> List[WellEntity]:
         wells_query = session.query(WellEntity).filter(WellEntity.user_id == user.id)
         wells = wells_query.order_by(WellEntity.created_at.desc()).limit(limit).offset(offset).all()
         count = wells_query.count()
@@ -66,8 +66,11 @@ class WellService:
     def get_job(self, well_id: int, id: int, user: UserEntity) -> JobEntity:
         return session.query(JobEntity).filter(JobEntity.id == id and JobEntity.well_id == well_id and JobEntity.user_id == user.id).first()
     
-    def get_jobs_by_user(self, user: UserEntity) -> List[JobEntity]:
-        return session.query(JobEntity).filter(JobEntity.user_id == user.id).all()
+    def get_jobs_by_user(self, limit: int, offset: int, user: UserEntity) -> List[JobEntity]:
+        jobs_query = session.query(JobEntity).filter(JobEntity.user_id == user.id)
+        jobs = jobs_query.limit(limit).offset(offset).all()
+        count = jobs_query.count()
+        return jobs, count
 
     def save_well_file(self, well_id: int, file: UploadFile):
         # Save file to disk
