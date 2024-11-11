@@ -56,16 +56,20 @@ class Worker:
     async def process_message(self, message):
         job = Job.model_validate_json(message.body.decode())
         logging.info(f"Processing job: {job}")
-        result = job.model_dump_json().encode()
-        # Publish the result to the output queue
-        
-        dataframe = self.read_las_file(job)
-        output_path = f"./static/{job.well_id}/{job.id}/graphs"
-        self.multiplot.plot(dataframe, output_path)
-        
-        await self.channel.default_exchange.publish(
-            aio_pika.Message(body=result),
-            routing_key=self.output_queue.name,
-        )
+
+        try:
+            dataframe = self.read_las_file(job)
+            output_path = f"./static/{job.well_id}/{job.id}/graphs"
+            self.multiplot.plot(dataframe, output_path)
+            job.status = "processed"
+        except Exception as e:
+            logging.error(f"Failed to process job {job.id}: {e}")
+            job.status = "failed"
+        finally:
+            await self.channel.default_exchange.publish(
+                aio_pika.Message(body=job.model_dump_json().encode()),
+                routing_key=self.output_queue.name,
+            )
+
         
         
