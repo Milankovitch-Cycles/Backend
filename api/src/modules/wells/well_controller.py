@@ -100,7 +100,7 @@ class WellController:
     ):
         jobs, count = self.well_service.get_jobs_by_user(limit, offset, user)
         pagination = get_pagination(limit, offset, count)
-        return [{"jobs": [map_to_job_with_graphs(job) for job in jobs], "pagination": pagination}]
+        return {"jobs": [map_to_job_with_graphs(job) for job in jobs], "pagination": pagination}
 
     async def create_well_job(
         self,
