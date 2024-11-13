@@ -1,5 +1,9 @@
 import aio_pika
 import logging
+import json
+from src.modules.wells.well_service import WellService
+from src.common.services.smtp.smtp_service import SmtpService
+from src.modules.users.user_service import UserService
 from settings import RABBITMQ_HOST, RABBITMQ_PORT
 
 RESULTS_QUEUE_NAME = 'results_queue'
@@ -10,6 +14,9 @@ class _JobsResultsConsumer:
         self.connection = None
         self.channel = None
         self.results_queue = None
+        self.smtp_service = SmtpService()
+        self.user_service = UserService()
+        self.well_service = WellService()
 
     async def start(self):
         self.connection = await aio_pika.connect_robust(
@@ -33,8 +40,14 @@ class _JobsResultsConsumer:
         logging.info("JobsResultsConsumer stopped")
 
     def process_message(self, message):
-        # TODO: Implement processing of results
-        logging.info(message.body)
-
+        decode_message = json.loads(message.body.decode())
+        logging.info(f"Decoded message: {decode_message}")
+        user = self.user_service.get_by_id(decode_message["user_id"])
+        self.well_service.update_job(decode_message["id"], {"status": decode_message["status"]}, user)
+        self.smtp_service.send_email(
+            receiver=user.email,
+            title="Job completed",
+            text="Your job has been completed"
+        )
 
 jobs_results_consumer = _JobsResultsConsumer()

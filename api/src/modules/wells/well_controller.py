@@ -91,6 +91,16 @@ class WellController:
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")        
         return map_to_job_with_graphs(job)
+    
+    def get_user_jobs(
+        self,
+        limit: int = 10,
+        offset: int = 0,
+        user: UserEntity = Depends(get_user_in_login_flow),
+    ):
+        jobs, count = self.well_service.get_jobs_by_user(limit, offset, user)
+        pagination = get_pagination(limit, offset, count)
+        return [{"jobs": [map_to_job_with_graphs(job) for job in jobs], "pagination": pagination}]
 
     async def create_well_job(
         self,
@@ -102,6 +112,7 @@ class WellController:
         if not well:
             raise HTTPException(status_code=404, detail="Well not found")
         # Create job in db, then queue it for processing
+        job.parameters["filename"] = well.filename
         new_job: JobEntity = self.well_service.create_job(well.id, job.type, job.parameters, user)
         await jobs_queue_service.queue_job(new_job)
         return new_job

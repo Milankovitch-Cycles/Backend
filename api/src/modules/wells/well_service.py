@@ -11,14 +11,14 @@ from pathlib import Path
 
 
 class WellService:
-    def get_wells(self, limit, offset, user: UserEntity)-> List[WellEntity]:
+    def get_wells(self, limit: int, offset: int, user: UserEntity)-> List[WellEntity]:
         wells_query = session.query(WellEntity).filter(WellEntity.user_id == user.id)
         wells = wells_query.order_by(WellEntity.created_at.desc()).limit(limit).offset(offset).all()
         count = wells_query.count()
         return wells, count
 
     def get_well(self, id: int, user: UserEntity) -> WellEntity:
-        return session.query(WellEntity).filter(WellEntity.id == id).first()
+        return session.query(WellEntity).filter(WellEntity.id == id and WellEntity.user_id == user.id).first()
 
     def create_well(self, name: str, description: str, filename: str, user: UserEntity) -> WellEntity:
         well = WellEntity(name=name, description=description, filename=filename, user_id=user.id)
@@ -44,6 +44,17 @@ class WellService:
         session.commit()
         session.refresh(well)
         return well
+    
+    
+    def update_job(self, job_id: int, data, user: UserEntity) -> WellEntity:
+        job = session.query(JobEntity).filter(JobEntity.id == job_id and JobEntity.user_id == user.id).first()
+        if not job:
+            raise HTTPException(status_code=404, detail="Well not found")
+        for key, value in data.items():
+            setattr(job, key, value)
+        session.commit()
+        session.refresh(job)
+        return job
         
     def create_job(self, well_id: int, type: str, parameters: dict, user: UserEntity):
         job = JobEntity(well_id=well_id, type=type, parameters=parameters, user_id=user.id)
@@ -53,7 +64,13 @@ class WellService:
         return job
 
     def get_job(self, well_id: int, id: int, user: UserEntity) -> JobEntity:
-        return session.query(JobEntity).filter(JobEntity.id == id, JobEntity.well_id == well_id).first()
+        return session.query(JobEntity).filter(JobEntity.id == id and JobEntity.well_id == well_id and JobEntity.user_id == user.id).first()
+    
+    def get_jobs_by_user(self, limit: int, offset: int, user: UserEntity) -> List[JobEntity]:
+        jobs_query = session.query(JobEntity).filter(JobEntity.user_id == user.id)
+        jobs = jobs_query.limit(limit).offset(offset).all()
+        count = jobs_query.count()
+        return jobs, count
 
     def save_well_file(self, well_id: int, file: UploadFile):
         # Save file to disk

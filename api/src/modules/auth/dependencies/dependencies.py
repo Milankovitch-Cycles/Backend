@@ -29,7 +29,7 @@ def validate_permissions(message, permissions):
 
 
 def validate_user(message):
-    user = user_service.get(message["sub"])
+    user = user_service.get_by_email(message["sub"])
     if not user:
         raise HTTPException(
             status_code=404,

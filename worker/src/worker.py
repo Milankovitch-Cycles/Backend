@@ -3,6 +3,7 @@ import logging
 import aio_pika
 import lasio
 from src.plots.factory.factory import Factory
+from src.utils.dataframe import filter_by_index
 from .job import Job
 
 # TODO: extract these into env vars
@@ -41,23 +42,34 @@ class Worker:
         await self.channel.close()
         await self.connection.close()
         logging.info("Worker stopped")
-
-    async def process_message(self, message):
-        job = Job.model_validate_json(message.body.decode())
-        logging.info(f"Processing job: {job}")
-        result = job.model_dump_json().encode()
-        # Publish the result to the output queue
         
+    def read_las_file(self, job):
         # TO-DO: Dont know why it doesnt work with STORAGE_PATH (Check this)
         file_path = f"./static/{job.well_id}/{job.parameters["filename"]}"
         dataframe = lasio.read(file_path).df()
         
-        output_path = f"./static/{job.well_id}/{job.id}/graphs"
-        self.multiplot.plot(dataframe, output_path)
+        if job.parameters.get("min_window") and job.parameters.get("max_window"):
+            dataframe = filter_by_index(dataframe, job.parameters["min_window"], job.parameters["max_window"])
         
+        return dataframe
+
+    async def process_message(self, message):
+        job = Job.model_validate_json(message.body.decode())
+        logging.info(f"Processing job: {job}")
+
+        try:
+            dataframe = self.read_las_file(job)
+            output_path = f"./static/{job.well_id}/{job.id}/graphs"
+            self.multiplot.plot(dataframe, output_path)
+            job.status = "processed"
+        except Exception as e:
+            logging.error(f"Failed to process job {job.id}: {e}")
+            job.status = "failed"
+        finally:
+            await self.channel.default_exchange.publish(
+                aio_pika.Message(body=job.model_dump_json().encode()),
+                routing_key=self.output_queue.name,
+            )
+
         
-        await self.channel.default_exchange.publish(
-            aio_pika.Message(body=result),
-            routing_key=self.output_queue.name,
-        )
         
