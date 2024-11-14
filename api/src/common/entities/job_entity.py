@@ -28,8 +28,7 @@ class GetJobModel(BaseModel):
     result: dict | None
     status: str | None
     created_at: datetime
-    graphs: list[str] | None = None
-
+    
 class CreateJobModel(BaseModel):
     type: str
     parameters: dict | None
