@@ -60,7 +60,8 @@ class Worker:
         try:
             dataframe = self.read_las_file(job)
             output_path = f"./static/{job.well_id}/{job.id}/graphs"
-            self.multiplot.plot(dataframe, output_path)
+            images = self.multiplot.plot(dataframe, output_path)
+            job.result = {"graphs": images}
             job.status = "processed"
         except Exception as e:
             logging.error(f"Failed to process job {job.id}: {e}")

@@ -16,7 +16,7 @@ class MultiplotService():
         
         for strategy in self.strategies:
             self.plot_service.set_strategy(strategy)
-            image_path = self.plot_service.plot(dataframe, path)
-            images.append(image_path)
+            image = self.plot_service.plot(dataframe, path)
+            images.append(image)
 
         return images            

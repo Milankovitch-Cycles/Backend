@@ -16,7 +16,6 @@ class WellEntity(Base):
     description = Column(String, nullable=True)
     filename = Column(String, nullable=True)
     well_metadata = Column(String, nullable=True)
-    status = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     jobs = relationship("JobEntity", back_populates="well", cascade="all, delete-orphan")
@@ -28,7 +27,6 @@ class GetWellModel(BaseModel):
     description: str | None
     filename: str | None
     well_metadata: str | None
-    status: str | None
     user_id: int | None
     created_at: datetime | None
     jobs: List[GetJobModel] | None
