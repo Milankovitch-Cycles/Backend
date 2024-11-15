@@ -112,6 +112,6 @@ class WellController:
             raise HTTPException(status_code=404, detail="Well not found")
         # Create job in db, then queue it for processing
         job.parameters["filename"] = well.filename
-        new_job: JobEntity = self.well_service.create_job(well.id, job.type, job.parameters, user)
+        new_job: JobEntity = self.well_service.create_job(well_id=well.id, type=job.type, parameters=job.parameters, user=user)
         await jobs_queue_service.queue_job(new_job)
         return new_job
