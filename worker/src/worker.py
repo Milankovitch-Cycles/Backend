@@ -53,15 +53,25 @@ class Worker:
         
         return dataframe
 
+    def write_csv(self, dataframe, path):
+        numeric_dataframe = dataframe.select_dtypes(include=['number'])
+        variation = numeric_dataframe.diff().abs().sum(axis=1)
+        representative_dataframe = dataframe.loc[variation.nlargest(200).index]
+        representative_dataframe.to_csv(path)
+        return {"csv": path}
+    
     async def process_message(self, message):
         job = Job.model_validate_json(message.body.decode())
         logging.info(f"Processing job: {job}")
 
         try:
-            dataframe = self.read_las_file(job)
-            output_path = f"./static/{job.well_id}/{job.id}/graphs"
-            images = self.multiplot.plot(dataframe, output_path)
-            job.result = {"graphs": images}
+            dataframe = self.read_las_file(job)                                
+            images = self.multiplot.plot(dataframe, f"./static/{job.well_id}/{job.id}/graphs")
+                        
+            if job.type == 'NEW_WELL':
+                job.result = self.write_csv(dataframe[['GR']], f"./static/{job.well_id}/gamma_ray.csv")
+            
+            job.result = {**job.result, "graphs": images}
             job.status = "processed"
         except Exception as e:
             logging.error(f"Failed to process job {job.id}: {e}")
@@ -71,6 +81,3 @@ class Worker:
                 aio_pika.Message(body=job.model_dump_json().encode()),
                 routing_key=self.output_queue.name,
             )
-
-        
-        
