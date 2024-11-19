@@ -54,10 +54,10 @@ class Worker:
         return dataframe
 
     def write_csv(self, dataframe, path):
-        numeric_dataframe = dataframe.select_dtypes(include=['number'])
+        numeric_dataframe = dataframe.select_dtypes(include=['int'])
         variation = numeric_dataframe.diff().abs().sum(axis=1)
         representative_dataframe = dataframe.loc[variation.nlargest(200).index]
-        representative_dataframe.to_csv(path)
+        representative_dataframe.to_csv(path, float_format='%.0f')
         return {"csv": path}
     
     async def process_message(self, message):
@@ -69,7 +69,10 @@ class Worker:
             images = self.multiplot.plot(dataframe, f"./static/{job.well_id}/{job.id}/graphs")
                         
             if job.type == 'NEW_WELL':
-                job.result = self.write_csv(dataframe[['GR']], f"./static/{job.well_id}/gamma_ray.csv")
+                dataframe['TEMP_DEPTH'] = dataframe.index.astype(int)
+                dataframe['GR'] = dataframe['GR'].dropna().astype(int)
+                dataframe = dataframe.groupby('TEMP_DEPTH').mean()
+                job.result = self.write_csv(dataframe[['GR']], f"./static/{job.well_id}/gamma_ray.txt")
             
             job.result = {**job.result, "graphs": images}
             job.status = "processed"
