@@ -1,10 +1,12 @@
 from fastapi import APIRouter
+from src.modules.auth.dtos.dtos import GetUserDto
 from src.modules.auth.auth_controller import AuthController
 from src.common.types.types import Token, Message
 
 auth = APIRouter(tags=["Auth"], prefix="/auth")
 controller = AuthController()
 
+auth.add_api_route("/me", controller.me, response_model=GetUserDto, methods=["GET"])
 auth.add_api_route("/register/start", controller.start_registration, response_model=Token, methods=["POST"])
 auth.add_api_route("/register/finish", controller.finish_registration, response_model=Message, methods=["POST"])
 auth.add_api_route("/login", controller.login,  response_model=Token, methods=["POST"])

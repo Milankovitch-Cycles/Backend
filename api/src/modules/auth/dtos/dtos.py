@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -25,3 +26,9 @@ class VerifyResetPasswordDto(BaseModel):
 
 class FinishResetPasswordDto(BaseModel):
     password: str
+
+class GetUserDto(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    pic: Optional[str] = None
+    email: Optional[str] = None
