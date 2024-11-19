@@ -57,7 +57,7 @@ class WellService:
         return job
         
     def create_job(self, well_id: int, type: str, parameters: dict, user: UserEntity):
-        job = JobEntity(well_id=well_id, type=type, parameters=parameters, user_id=user.id)
+        job = JobEntity(well_id=well_id, type=type, parameters=parameters, status="in_progress", user_id=user.id)
         session.add(job)
         session.commit()
         session.refresh(job)
