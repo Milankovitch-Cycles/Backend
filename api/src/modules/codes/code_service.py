@@ -27,7 +27,7 @@ class CodeService:
     def send(self, email: str):
         code = self.create(email)
         return self.smtp_service.send_email(
-            email, "Verification Code", f"Your code is {code}"
+            email, "Verification Code 🔒", f"Your code is {code}"
         )
 
     def validate(self, email: str, code: str) -> bool:
