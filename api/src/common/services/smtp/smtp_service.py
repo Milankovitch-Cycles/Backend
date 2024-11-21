@@ -24,7 +24,7 @@ class SmtpService:
         )
         self.server = Server(hostname=SMTP_SERVER, port=SMTP_PORT)
 
-    def create_body(self, sender: Sender, receiver: str, title: str, text: str) -> str:
+    def create_body(self, sender: Sender, receiver: str, title: str, content: str) -> str:
         message = MIMEMultipart("alternative")
         message["Subject"] = title
         message["From"] = f"{sender.name} <{sender.email}>"
@@ -39,8 +39,8 @@ class SmtpService:
                         <p style="margin: 5px 0 0; font-size: 16px;">{title}</p>
                     </div>
                     <div style="padding: 20px;">
-                        <p style="font-size: 16px; color: #333333; line-height: 1.6;">
-                            {text}
+                        <p style="font-size: 16px; color: #000000; line-height: 1.6; margin-bottom: 20px;">
+                            {content.replace("\n", "<br>")}
                         </p>
                     </div>
                     <div style="background-color: #f4f4f4; color: #777777; padding: 10px; text-align: center; font-size: 12px;">
@@ -52,8 +52,8 @@ class SmtpService:
         """
 
         message.attach(MIMEText(html_template, "html"))
-
         return message.as_string()
+
 
     def send_email(self, receiver: str, title: str, text: str):
         body = self.create_body(self.sender, receiver, title, text)

@@ -47,7 +47,11 @@ class _JobsResultsConsumer:
         self.smtp_service.send_email(
             receiver=user.email,
             title="Job completed 🤝",
-            text="Your job has been completed 🛢️ 🌍"
+            text=(
+            "👋 Hey!\n\n"
+            "Great news! Your job has been completed 🛢️ 🌍\n\n"
+            "Thanks for working with us! We're happy everything is all set\n\n"
+            )
         )
 
 jobs_results_consumer = _JobsResultsConsumer()
