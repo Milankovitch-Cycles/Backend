@@ -4,7 +4,6 @@ from src.common.entities.code_entity import CodeEntity
 from src.common.config.config import session
 import random
 
-
 class CodeService:
     def __init__(self):
         self.smtp_service = SmtpService()
@@ -25,9 +24,16 @@ class CodeService:
         return code_entity.code
 
     def send(self, email: str):
-        code = self.create(email)
+        code = self.create(email)        
         return self.smtp_service.send_email(
-            email, "Verification Code", f"Your code is {code}"
+            receiver=email, 
+            title="Verification Code 🔒", 
+            text= (
+            "👋 Hello!\n\n"
+            "Thank you for using our services at Milankovic API. 🌟\n"
+            "To continue with the verification process, please use the following code:\n\n"
+            f"{code}\n\n"
+        )
         )
 
     def validate(self, email: str, code: str) -> bool:
