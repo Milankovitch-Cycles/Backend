@@ -1,8 +1,10 @@
+from src.modules.auth.mappers.auth_mappers import map_to_user_dto
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from src.modules.auth.dependencies.dependencies import (
     get_user_in_registration_flow,
     get_user_in_reset_password_flow,
+    get_user_in_login_flow,
 )
 from src.common.entities.user_entity import UserEntity
 from src.modules.auth.dtos.dtos import (
@@ -20,7 +22,13 @@ from src.common.types.types import Token, Message
 class AuthController:
     def __init__(self):
         self.auth_service = AuthService()
-
+        
+    def me(
+        self,
+        user: UserEntity = Depends(get_user_in_login_flow),
+    ) -> UserEntity:
+        return map_to_user_dto(user)
+        
     def start_registration(
         self,
         register_request_dto: StartRegistrationRequestDto,
