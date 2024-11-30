@@ -89,8 +89,7 @@ class Worker:
             
             elif job.type == 'MILANKOVIC_CYCLES':
                 frequency_dataframe = FourierTransform.convert_to_frequency_domain(dataframe, "GR", 0.001)
-                frequency_path = f"./static/{job.well_id}/{job.id}/frequencies.txt"
-                self.write_csv(frequency_dataframe, frequency_path, job.type)
+                frequency_path = self.write_csv(frequency_dataframe, f"./static/{job.well_id}/{job.id}/frequencies.txt", job.type)
                 cycles = MilankovitchCycleAnalyzer.detect_cycles(frequency_dataframe)
                 job.result = {**job.result, "frequencies_path": frequency_path, "cycles": cycles}
                 
