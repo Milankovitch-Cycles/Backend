@@ -6,7 +6,7 @@ import os
 from src.plots.factory.factory import Factory
 from src.utils.dataframe import filter_by_index
 from src.fourier_transform import FourierTransform
-from worker.src.milankovic_cycle_analyzer import MilankovitchCycleAnalyzer
+from src.milankovic_cycle_analyzer import MilankovitchCycleAnalyzer
 from .job import Job
 from pandas import DataFrame
 
