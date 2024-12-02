@@ -14,8 +14,9 @@ class NewWellProcessor(JobProcessor):
         return path
     
     def process(self, job, dataframe):
-        dataframe['TEMP_DEPTH'] = dataframe.index.astype(int)
-        dataframe['GR'] = dataframe['GR'].dropna().astype(int)
-        dataframe = dataframe.groupby('TEMP_DEPTH').mean()
-        gamma_ray_path = self.write_csv(dataframe[['GR']], f"./static/{job.well_id}/gamma_ray.txt")
+        gamma_ray_dataframe = dataframe[['GR']].copy()
+        gamma_ray_dataframe['TEMP_DEPTH'] = dataframe.index.astype(int)
+        gamma_ray_dataframe['GR'] = dataframe['GR'].dropna().astype(int)
+        gamma_ray_dataframe = gamma_ray_dataframe.groupby('TEMP_DEPTH').mean()
+        gamma_ray_path = self.write_csv(gamma_ray_dataframe[["GR"]], f"./static/{job.well_id}/gamma_ray.txt")
         return {"gamma_ray_path": gamma_ray_path}
