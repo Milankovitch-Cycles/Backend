@@ -2,13 +2,9 @@
 import logging
 import aio_pika
 import lasio
-import os
-from src.plots.factory.factory import Factory
-from src.utils.dataframe import filter_by_index
-from src.fourier_transform import FourierTransform
-from src.milankovic_cycle_analyzer import MilankovitchCycleAnalyzer
 from .job import Job
-from pandas import DataFrame
+from src.processor.job_processor_manager import JobProcessorManager
+from src.utils.dataframe import filter_by_index
 
 # TODO: extract these into env vars
 RABBITMQ_HOST = "rabbitmq"
@@ -23,7 +19,7 @@ class Worker:
         self.channel = None
         self.input_queue = None
         self.output_queue = None
-        self.multiplot = Factory.make_multiplot()
+        self.job_processor_manager = JobProcessorManager()
 
     async def start(self):
         self.connection = await aio_pika.connect_robust(
@@ -56,18 +52,6 @@ class Worker:
             dataframe = filter_by_index(dataframe, job.parameters["min_window"], job.parameters["max_window"])
         
         return dataframe
-
-    def write_csv(self, dataframe: DataFrame, path: str, type: str):
-        if not os.path.exists(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))       
-        if type == 'MILANKOVIC_CYCLES':
-            dataframe.to_csv(path, float_format='%.6f', index=False)
-        else:
-            numeric_dataframe = dataframe.select_dtypes(include=['int'])
-            variation = numeric_dataframe.diff().abs().sum(axis=1)
-            representative_dataframe = dataframe.loc[variation.nlargest(200).index]
-            representative_dataframe.to_csv(path, float_format='%.0f')
-        return path
     
     async def process_message(self, message):
         job = Job.model_validate_json(message.body.decode())
@@ -75,24 +59,7 @@ class Worker:
 
         try:
             dataframe = self.read_las_file(job)                                
-            
-            if job.type in ["NEW_WELL", "GRAPHS"]:
-                images = self.multiplot.plot(dataframe, f"./static/{job.well_id}/{job.id}/graphs")
-                job.result = {**job.result, "graphs": images}
-
-            if job.type == 'NEW_WELL':
-                dataframe['TEMP_DEPTH'] = dataframe.index.astype(int)
-                dataframe['GR'] = dataframe['GR'].dropna().astype(int)
-                dataframe = dataframe.groupby('TEMP_DEPTH').mean()
-                gamma_ray_path = self.write_csv(dataframe[['GR']], f"./static/{job.well_id}/gamma_ray.txt", type=job.type)
-                job.result = {**job.result, "gamma_ray_path": gamma_ray_path}
-            
-            elif job.type == 'MILANKOVIC_CYCLES':
-                frequency_dataframe = FourierTransform.convert_to_frequency_domain(dataframe, "GR", 0.001)
-                frequency_path = self.write_csv(frequency_dataframe, f"./static/{job.well_id}/{job.id}/frequencies.txt", job.type)
-                cycles = MilankovitchCycleAnalyzer.detect_cycles(frequency_dataframe)
-                job.result = {**job.result, "frequencies_path": frequency_path, "cycles": cycles}
-                
+            job.result = self.job_processor_manager.process_job(job, dataframe)  
             job.status = "processed"
         except Exception as e:
             logging.error(f"Failed to process job {job.id}: {e}")
