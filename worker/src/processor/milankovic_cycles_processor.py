@@ -1,8 +1,8 @@
 import os
 from pandas import DataFrame
 from src.processor.job_processor import JobProcessor
-from src.fourier_transform import FourierTransform
-from src.milankovic_cycle_analyzer import MilankovitchCycleAnalyzer
+from src.utils.fourier_transform import FourierTransform
+from src.utils.milankovic_cycle_analyzer import MilankovitchCycleAnalyzer
 
 
 class MilankovicCyclesProcessor(JobProcessor):
