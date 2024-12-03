@@ -1,6 +1,7 @@
 from src.processor.graphs_processor import GraphsProcessor
 from src.processor.milankovic_cycles_processor import MilankovicCyclesProcessor
 from src.processor.new_well_processor import NewWellProcessor
+from src.processor.prediction_processor import PredictionProcessor
 
 
 class JobProcessorManager:
@@ -11,6 +12,8 @@ class JobProcessorManager:
             return [GraphsProcessor()]
         elif(type == "MILANKOVIC_CYCLES"):
             return [MilankovicCyclesProcessor()]
+        elif(type == "PREDICTION"):
+            return [PredictionProcessor()]
         else:
             return []
 
