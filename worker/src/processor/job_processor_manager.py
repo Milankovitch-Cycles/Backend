@@ -7,7 +7,7 @@ from src.processor.prediction_processor import PredictionProcessor
 class JobProcessorManager:
     def get_strategies(self, type: str):
         if(type == "NEW_WELL"):
-            return [NewWellProcessor(), GraphsProcessor()]
+            return [NewWellProcessor()]
         elif(type == "GRAPHS"):
             return [GraphsProcessor()]
         elif(type == "MILANKOVIC_CYCLES"):

@@ -3,6 +3,7 @@ from http.client import HTTPException
 from src.common.entities.user_entity import UserEntity
 from src.common.entities.well_entity import WellEntity
 from src.common.entities.job_entity import JobEntity
+from src.common.entities.job_type_entity import JobTypeEntity
 from src.common.config.config import session
 from settings import STORAGE_PATH
 from fastapi import UploadFile, HTTPException
@@ -71,6 +72,9 @@ class WellService:
         jobs = jobs_query.limit(limit).offset(offset).all()
         count = jobs_query.count()
         return jobs, count
+    
+    def get_job_types(self) -> List[JobTypeEntity]:
+        return session.query(JobTypeEntity).all()
 
     def save_well_file(self, well_id: int, file: UploadFile):
         # Save file to disk

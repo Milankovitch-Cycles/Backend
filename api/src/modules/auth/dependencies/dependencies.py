@@ -69,5 +69,5 @@ def get_user_in_registration_flow(
 ):
     message = jwt_service.decode(token)
     validate_permissions(message, Permissions.REGISTER.value)
-    user = UserEntity(email=message["email"], password=message["password"])
+    user = UserEntity(email=message["email"], password=message["password"], first_name=message["first_name"], last_name=message["last_name"])
     return user
