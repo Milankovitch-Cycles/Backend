@@ -1,3 +1,5 @@
+from src.common.entities.user_entity import UserEntity
+from src.modules.auth.dtos.dtos import StartRegistrationRequestDto
 from src.modules.auth.managers.reset_password_service import ResetPasswordService
 from src.modules.auth.managers.login_service import LoginService
 from src.modules.auth.managers.register_service import RegisterService
@@ -10,11 +12,11 @@ class AuthService:
         self.login_service = LoginService()
         self.reset_pasword_service = ResetPasswordService()
 
-    def start_registration(self, email: str, password: str) -> Token:
-        return self.register_service.start(email, password)
+    def start_registration(self, request: StartRegistrationRequestDto) -> Token:
+        return self.register_service.start(request)
 
-    def finish_registration(self, email: str, password: str, code: str) -> Message:
-        return self.register_service.finish(email, password, code)
+    def finish_registration(self, user: UserEntity, code: str) -> Message:
+        return self.register_service.finish(user, code)
 
     def login(self, email: str, password: str) -> Token:
         return self.login_service.login(email, password)

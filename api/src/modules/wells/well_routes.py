@@ -5,6 +5,7 @@ wells = APIRouter(tags=["Wells"], prefix="/wells")
 controller = WellController()
 
 
+wells.add_api_route("/jobs/types", controller.get_job_types, methods=["GET"])
 wells.add_api_route("/jobs", controller.get_user_jobs, methods=["GET"])
 
 # Wells

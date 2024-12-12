@@ -100,6 +100,9 @@ class WellController:
         jobs, count = self.well_service.get_jobs_by_user(limit, offset, user)
         pagination = get_pagination(limit, offset, count)
         return {"jobs": jobs, "pagination": pagination}
+    
+    def get_job_types(self, _: UserEntity = Depends(get_user_in_login_flow)):
+        return self.well_service.get_job_types()
 
     async def create_well_job(
         self,
