@@ -9,8 +9,7 @@ class UserService:
     def get_by_email(self, email: str) -> UserEntity:
         return session.query(UserEntity).filter(UserEntity.email == email).first()
 
-    def create(self, email: str, password: str) -> UserEntity:
-        user = UserEntity(email=email, password=password)
+    def create(self, user: UserEntity) -> UserEntity:
         session.add(user)
         session.commit()
         return user
