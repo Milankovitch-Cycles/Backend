@@ -42,8 +42,11 @@ class _JobsResultsConsumer:
     def process_message(self, message):
         decode_message = json.loads(message.body.decode())
         logging.info(f"Decoded message: {decode_message}")
-        user = self.user_service.get_by_id(decode_message["user_id"])
-        self.well_service.update_job(decode_message["id"], {"status": decode_message["status"], "result": decode_message["result"]}, user)
+        job = decode_message["job"]
+        metadata = decode_message["metadata"]
+        user = self.user_service.get_by_id(job["user_id"])
+        self.well_service.update_well(job["well_id"], {"well_metadata": metadata }, user)
+        self.well_service.update_job(job["id"], { "status": job["status"], "result": job["result"] }, user)
         self.smtp_service.send_email(
             receiver=user.email,
             title="Job completed 🤝",

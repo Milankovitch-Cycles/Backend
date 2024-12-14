@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from sqlalchemy import Column, DateTime, Integer, String, func, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, func, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from src.common.utils.pagination import Pagination
 from typing import List
@@ -15,7 +15,7 @@ class WellEntity(Base):
     name = Column(String, nullable=True)
     description = Column(String, nullable=True)
     filename = Column(String, nullable=True)
-    well_metadata = Column(String, nullable=True)
+    well_metadata = Column(JSON, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     jobs = relationship("JobEntity", back_populates="well", cascade="all, delete-orphan")
@@ -26,7 +26,7 @@ class GetWellModel(BaseModel):
     name: str | None
     description: str | None
     filename: str | None
-    well_metadata: str | None
+    well_metadata: dict | None
     user_id: int | None
     created_at: datetime | None
     jobs: List[GetJobModel] | None
