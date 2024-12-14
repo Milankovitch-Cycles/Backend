@@ -17,8 +17,8 @@ class FourierTransform:
         frequencies = np.fft.fftfreq(len(column_array), d=(time[1] - time[0]))
 
         half_size = len(column_array) // 2
-        positive_amplitudes = np.abs(fft_values[:half_size])
-        positive_frequencies = frequencies[:half_size]
+        positive_amplitudes = np.abs(fft_values[1:half_size])
+        positive_frequencies = frequencies[1:half_size]
 
         return pd.DataFrame(
             {"frequencies": positive_frequencies, "amplitudes": positive_amplitudes}

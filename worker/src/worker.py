@@ -2,7 +2,7 @@
 import logging
 import aio_pika
 import lasio
-from .job import Job
+from .job import Job, ProcessResult
 from src.processor.job_processor_manager import JobProcessorManager
 from src.utils.dataframe import filter_by_index
 
@@ -43,29 +43,40 @@ class Worker:
         await self.connection.close()
         logging.info("Worker stopped")
         
+
+    def get_metadata(self, file):
+        metadata = {}
+        for item in file.well.items():
+            metadata.update({item[0]: item[1].value})
+        return metadata
+            
+        
     def read_las_file(self, job):
         # TO-DO: Dont know why it doesnt work with STORAGE_PATH (Check this)
         file_path = f"./static/{job.well_id}/{job.parameters["filename"]}"
-        dataframe = lasio.read(file_path).df()
+        file = lasio.read(file_path)
+        metadata = self.get_metadata(file)
+        dataframe = file.df()
         
         if job.parameters.get("min_window") and job.parameters.get("max_window"):
             dataframe = filter_by_index(dataframe, job.parameters["min_window"], job.parameters["max_window"])
         
-        return dataframe
+        return dataframe, metadata
     
     async def process_message(self, message):
         job = Job.model_validate_json(message.body.decode())
         logging.info(f"Processing job: {job}")
 
         try:
-            dataframe = self.read_las_file(job)                                
+            dataframe, metadata = self.read_las_file(job)      
             job.result = self.job_processor_manager.process_job(job, dataframe)  
             job.status = "processed"
         except Exception as e:
             logging.error(f"Failed to process job {job.id}: {e}")
             job.status = "failed"
         finally:
+            result = ProcessResult(job=job, metadata=metadata)
             await self.channel.default_exchange.publish(
-                aio_pika.Message(body=job.model_dump_json().encode()),
+                aio_pika.Message(body=result.model_dump_json().encode()),
                 routing_key=self.output_queue.name,
             )

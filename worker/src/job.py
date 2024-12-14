@@ -11,3 +11,7 @@ class Job(BaseModel):
     status: str | None
     user_id: int
     created_at: datetime
+
+class ProcessResult(BaseModel):
+    job: Job
+    metadata: dict | None
